@@ -110,6 +110,7 @@ namespace DGtal
       TPoint point3;
     };      
     
+    
     struct IndexOfCreatedTriangle{
       unsigned int indexTr1;
       unsigned int indexTr2;

@@ -48,6 +48,7 @@ using namespace DGtal::Z2i;
 // Functions for testing class TriangularMeshFrom2DPoints.
 ///////////////////////////////////////////////////////////////////////////////
 
+
 /**
  * Test on various intern fonctions
  *
