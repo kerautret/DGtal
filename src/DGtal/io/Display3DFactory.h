@@ -53,7 +53,7 @@
 #include "DGtal/topology/Object.h"
 #include "DGtal/kernel/PointVector.h"
 #include "DGtal/geometry/curves/GridCurve.h"
-#include "DGtal/shapes/fromPoints/MeshFromPoints.h"
+#include "DGtal/shapes/Mesh.h"
 #include "DGtal/geometry/tools/SphericalAccumulator.h"
 #include "DGtal/io/colormaps/HueShadeColorMap.h"
 #include "DGtal/io/colormaps/CColorMap.h"
@@ -92,13 +92,13 @@ namespace DGtal
                       const double radius=1.0);
     // SphericalAccumulator
 
-    // MeshFromPoints        
+    // Mesh        
     template <typename TPoint>
-    static void drawAsFaces( Display3D & display,  const DGtal::MeshFromPoints<TPoint> & );
+    static void drawAsFaces( Display3D & display,  const DGtal::Mesh<TPoint> & );
 
     template <typename TPoint>
-    static void draw( Display3D & display, const  DGtal::MeshFromPoints<TPoint> &  );
-    // MeshFromPoints
+    static void draw( Display3D & display, const  DGtal::Mesh<TPoint> &  );
+    // Mesh
 
 
     
@@ -315,6 +315,10 @@ namespace DGtal
     static void draw( Display3D & display, const DGtal::CameraDirection & );
     static void draw( Display3D & display, const DGtal::CameraUpVector & );
     static void draw( Display3D & display, const DGtal::CameraZNearFar & );
+
+    static void draw( Display3D & display, 
+		      const DGtal::Display3D::GrayScaleImage & image );
+
 
     static void draw( Display3D & display, const DGtal::TransformedKSSurfel & aTransformedKSSurfel);
 
