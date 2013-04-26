@@ -74,7 +74,7 @@ namespace DGtal
   class Display3D
   {
 
- 
+        
     // ------------------------- Private Datas --------------------------------
   private:
     
@@ -131,7 +131,9 @@ namespace DGtal
       double a,b,c,d;
     };
 
-  
+    
+   
+
     /**
      * This structure is used to display clipping planes and the
      * components of the myKSSurfelList (allowing to set normal and
@@ -168,7 +170,11 @@ namespace DGtal
 
 
   public:
-    /// Structure used to display KSPoint in 3D and Mesh
+
+    enum StreamKey {addNewList, updateDisplay, shiftSurfelVisu};
+    enum ImageDirection {xDirection, yDirection, zDirection };
+
+    /// Structure used to display KSPoint in 3D and MeshFromPoints
     /// @see addKSPointel 
     ///
     
@@ -211,6 +217,102 @@ namespace DGtal
       unsigned int R,G,B,T;
     };
 
+    
+    /**
+     * Used to display a grayscale image as a textured quad image.
+     *
+     **/
+    struct GrayScaleImage{
+      // The quad coordinates should be given in counter clockwise order
+      double x1, y1, z1;
+      double x2, y2, z2;
+      double x3, y3, z3;
+      double x4, y4, z4;
+      
+      unsigned int width;
+      unsigned int height;
+      
+      unsigned char * tabImage;
+
+      /** 
+       *  Automatic fill image parameters from std image (image buffer, dimensions, vertex coordinates, orientation) 
+       *  @param image: the source image.
+       *  @param normalDir: the direction of normal vector of the image plane (xDirection, yDirection or zDirection (default)) .
+       *  @param xBottomLeft: the x coordinate of bottom left image point (default 0).
+       *  @param yBottomLeft: the x coordinate of bottom left image point (default 0).
+       *  @param zBottomLeft: the x coordinate of bottom left image point (default 0).
+       **/
+      template <typename ImageType>
+      void fillImageDataAndParam(const  ImageType & image, Display3D::ImageDirection normalDir=zDirection, 
+				 double xBottomLeft=0.0, double yBottomLeft=0.0, double zBottomLeft=0.0){
+	width = (image.extent())[0];
+	height = (image.extent())[1];
+	tabImage = new  unsigned char [width*height];
+	if(normalDir==zDirection){
+	  x1 = xBottomLeft; y1 = yBottomLeft; z1 = zBottomLeft;
+	  x2 = xBottomLeft+width; y2 = yBottomLeft; z2 = zBottomLeft; 
+	  x3 = xBottomLeft+width; y3 = yBottomLeft+height; z3 = zBottomLeft; 
+	  x4 = xBottomLeft; y4 = yBottomLeft+height; z4 = zBottomLeft; 
+	}else if(normalDir==yDirection){
+	  x1 = xBottomLeft+width; y1 = yBottomLeft; z1 = zBottomLeft;
+	  x2 = xBottomLeft; y2 = yBottomLeft; z2 = zBottomLeft; 
+	  x3 = xBottomLeft; y3 = yBottomLeft; z3 = zBottomLeft+height; 
+	  x4 = xBottomLeft+width; y4 = yBottomLeft; z4 = zBottomLeft+height; 
+	}else if(normalDir==xDirection){
+	  x1 = xBottomLeft; y1 = yBottomLeft; z1= zBottomLeft;
+	  x2 = xBottomLeft; y2 = yBottomLeft+width; z2 = zBottomLeft; 
+	  x3 = xBottomLeft; y3 = yBottomLeft+width; z3 = zBottomLeft+height; 
+	  x4 = xBottomLeft; y4 = yBottomLeft; z4 = zBottomLeft+height; 
+	}
+	unsigned int pos=0;
+	for(typename ImageType::Domain::ConstIterator it = image.domain().begin(), itend=image.domain().end();
+	     it!=itend;
+	    ++it){
+	  tabImage[pos]= image(*it);
+	  pos++;
+	}  
+      };	 
+
+      /** 
+       *  Update the  image parameters from std image (image buffer, vertex coordinates) 
+       *  The new image should be with same dimension than the original.
+       *  @param image: the source image.
+       *  @param xTranslation: the image translation in the  x direction (default 0).
+       *  @param yTranslation: the image translation in the  y direction (default 0).
+       *  @param zTranslation: the image translation in the  z direction (default 0).
+       **/
+      template <typename ImageType>
+      void updateImageDataAndParam(const  ImageType & image, 
+				   double xTranslation=0.0, double yTranslation=0.0, double zTranslation=0.0){
+	assert ( (image.extent())[0]== width && (image.extent())[1]== height);
+
+	x1 += xTranslation; y1 += yTranslation; z1 += zTranslation;
+	x2 += xTranslation; y2 += yTranslation; z2 += zTranslation;
+	x3 += xTranslation; y3 += yTranslation; z3 += zTranslation;
+	x4 += xTranslation; y4 += yTranslation; z4 += zTranslation;
+	
+	unsigned int pos=0;
+	 for(typename ImageType::Domain::ConstIterator it = image.domain().begin(), itend=image.domain().end();
+	    it!=itend;
+	    ++it){
+	  tabImage[pos]= image(*it);
+	  pos++;
+	}  
+      };	 
+
+
+
+
+
+      
+
+    std::string className() const
+      {
+	return "GrayScaleImage";
+      }
+      
+    };
+
     // ----------------------- Standard services ------------------------------
   public:
 
@@ -232,8 +334,6 @@ namespace DGtal
 
     // ----------------------- Interface --------------------------------------
   public:
-    enum StreamKey {addNewList, updateDisplay, shiftSurfelVisu};
-  
  
 
     /**
@@ -518,6 +618,30 @@ namespace DGtal
     
     void exportToMesh(Mesh<Display3D::pointD3D> & aMesh ) const;
     
+
+    
+    /**
+     * Add a GrayScaleImage in the list of image to be displayed.
+     * @param image: a GrayScaleImage including image data buffer and position, orientation.
+     *
+     **/
+    void addGrayScaleImage(const GrayScaleImage &image);
+    
+
+    /**
+     * Update the  image parameters from std image (image buffer, vertex coordinates) 
+     * The new image should be with same dimension than the original.
+     * @param imageIndex: corresponds to the chronoloigic index given by the fuction (addGrayScaleImage).
+     * @param image: the new image containing the new buffer (with same dimensions than the other image).
+     * @param xTranslation: the image translation in the  x direction (default 0).
+     * @param yTranslation: the image translation in the  y direction (default 0).
+     * @param zTranslation: the image translation in the  z direction (default 0).
+     **/
+    template <typename ImageType>
+    void updateGrayScaleImage(unsigned int imageIndex, const  ImageType & image, 
+			      double xTranslation=0.0, double yTranslation=0.0, double zTranslation=0.0);
+    
+
     
     
     /**
@@ -686,6 +810,10 @@ namespace DGtal
 
     float myMeshDefaultLineWidth;
     
+    // Used to store all displayed images
+    std::vector<GrayScaleImage> myGSImageList;
+
+
     
     // ------------------------- Hidden services ------------------------------
 

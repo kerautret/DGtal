@@ -129,7 +129,7 @@ namespace DGtal
     DGtal::Color myDefaultColor;
     bool myIsBackgroundDefault;
     bool myViewWire;
-  
+    bool myTextureInitiated;
   
     /**
      * Set the default color for future drawing.
@@ -185,7 +185,9 @@ namespace DGtal
      *
      **/
     void sortPolygonFromCamera();
-    
+  
+
+  
 
     /**
      * Draws the drawable [object] in this board. It should satisfy
@@ -227,15 +229,7 @@ namespace DGtal
 
 
 
-    // ------------------------- Private Datas --------------------------------
-  private:
 
-
-    GLuint myListToAff;
-    unsigned int myNbListe;
-    qglviewer::Vec myOrig, myDir, myDirSelector, mySelectedPoint;
-    QPoint myPosSelector;
-  
   public:
 
     // ------------------------- Hidden services ------------------------------
@@ -382,12 +376,47 @@ namespace DGtal
 
 
 
+ 
+    
+    
+
     // ------------------------- Internals ------------------------------------
+  private:
+ /**
+     * Used to display in OPENGL a grayscale image as a textured quad image.
+     *
+     **/
+    struct GLTextureImage{
+      // The quad coordinates should be given in counter clockwise order
+      double x1, y1, z1;
+      double x2, y2, z2;
+      double x3, y3, z3;
+      double x4, y4, z4;
+      
+      unsigned int myImageWidth;
+      unsigned int myImageHeight;
+
+      unsigned int myBufferWidth;
+      unsigned int myBufferHeight;
+      GLuint  myTextureName;
+      unsigned char *  myTextureImageBuffer;
+      
+      // By definition in OpenGL the image size of texture should power of 2  
+      double myTextureFitX;
+      double myTextureFitY;
+
+    };
+
+    // ------------------------- Private Datas --------------------------------
   private:
 
 
-
-
+    GLuint myListToAff;
+    unsigned int myNbListe;
+    qglviewer::Vec myOrig, myDir, myDirSelector, mySelectedPoint;
+    QPoint myPosSelector;
+    std::vector<GLTextureImage> myVectTextureImage;
+      
 
 
   }; // end of class Viewer3D
