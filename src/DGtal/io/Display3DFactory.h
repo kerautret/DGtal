@@ -57,7 +57,8 @@
 #include "DGtal/geometry/tools/SphericalAccumulator.h"
 #include "DGtal/io/colormaps/HueShadeColorMap.h"
 #include "DGtal/io/colormaps/CColorMap.h"
-
+#include "DGtal/images/ImageContainerBySTLVector.h"
+#include "DGtal/images/ImageContainerBySTLMap.h"
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -302,9 +303,26 @@ namespace DGtal
                std::pair<typename TKSpace::Point, typename TKSpace::Point > > & );
     // IncidentPointsRange
 
-    //
+
+    // ImageContainerBySTLMap 
+    template <typename TDomain, typename TValue>
+    static void draw( Display3D & display, const DGtal::ImageContainerBySTLMap<TDomain, TValue> anImage);
+    // ImageContainerBySTLMap 
+
+
+    // ImageContainerBySTLVector 
+    template <typename TDomain, typename TValue>
+    static void draw( Display3D & display, const DGtal::ImageContainerBySTLVector<TDomain, TValue> anImage);
+    // ImageContainerBySTLVector
+
     
     
+    
+    
+    
+
+  
+
     static void draw( Display3D & display, const DGtal::SetMode3D & );
     static void draw( Display3D & display, const DGtal::CustomStyle3D & );
     static void draw( Display3D & display, const DGtal::CustomColors3D & );
@@ -315,7 +333,9 @@ namespace DGtal
     static void draw( Display3D & display, const DGtal::CameraDirection & );
     static void draw( Display3D & display, const DGtal::CameraUpVector & );
     static void draw( Display3D & display, const DGtal::CameraZNearFar & );
-
+    template<typename TImageType>
+    static void draw( Display3D & display, const DGtal::UpdateImageData<TImageType> & );
+    static void draw( Display3D & display, const DGtal::UpdateImagePosition & );
     static void draw( Display3D & display, 
 		      const DGtal::Display3D::GrayScaleImage & image );
 
