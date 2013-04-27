@@ -1218,6 +1218,36 @@ void DGtal::Display3DFactory::draw( Display3D & display,
 }
 // IncidentPointsRange
 
+
+
+
+// ImageContainerBySTLMap  (2D)
+template <typename TDomain, typename TValue>
+inline
+void DGtal::Display3DFactory::draw( Display3D & display, const DGtal::ImageContainerBySTLMap<TDomain, TValue> anImage){
+  ASSERT(TDomain::Space::dimension == 2);
+  DGtal::Display3D::GrayScaleImage aGSImage; 
+  aGSImage.fillImageDataAndParam(anImage, DGtal::Display3D::zDirection);
+  display.addGrayScaleImage(aGSImage);
+}
+// ImageContainerBySTLMap 
+
+
+// ImageContainerBySTLVector  (2D)
+template <typename TDomain, typename TValue>
+inline
+void DGtal::Display3DFactory::draw( Display3D & display, const DGtal::ImageContainerBySTLVector<TDomain, TValue> anImage){
+  ASSERT(TDomain::Space::dimension == 2);
+  DGtal::Display3D::GrayScaleImage aGSImage; 
+  aGSImage.fillImageDataAndParam(anImage, DGtal::Display3D::zDirection);
+  display.addGrayScaleImage(aGSImage);
+}
+// ImageContainerBySTLVector
+
+    
+
+
+
 //
 
 inline
@@ -1316,6 +1346,24 @@ void  DGtal::Display3DFactory::draw( Display3D & display, const DGtal::Transform
   display.addKSSurfel(x, y, z,! xodd, !yodd, !zodd, factorVolSurfel, aTransformedKSSurfel.myShift, aTransformedKSSurfel.mySizeFactor, 
 		      true, aTransformedKSSurfel.mySurfel.myPositive,  basicMode );   
   display.setFillColor(fillColorSave);
+
+}
+
+
+
+template<typename TImageType>
+inline
+void 
+DGtal::Display3DFactory::draw( Display3D & display, const DGtal::UpdateImageData<TImageType> & anUpdate ){
+  display.updateGrayScaleImage(anUpdate.myIndex, *(anUpdate.myImage), anUpdate.myTranslateX, 
+			       anUpdate.myTranslateY, anUpdate.myTranslateZ);
+}
+
+
+void 
+inline
+DGtal::Display3DFactory::draw( Display3D & display, const DGtal::UpdateImagePosition & anUpdate ){
+    display.updateOrientationGrayScaleImage(anUpdate.myIndex, anUpdate.myPosX, anUpdate.myPosY, anUpdate.myPosZ, anUpdate.myNewDirection);
 }
 
 
