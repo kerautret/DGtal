@@ -1226,8 +1226,7 @@ template <typename TDomain, typename TValue>
 inline
 void DGtal::Display3DFactory::draw( Display3D & display, const DGtal::ImageContainerBySTLMap<TDomain, TValue> anImage){
   ASSERT(TDomain::Space::dimension == 2);
-  DGtal::Display3D::GrayScaleImage aGSImage; 
-  aGSImage.fillImageDataAndParam(anImage, DGtal::Display3D::zDirection);
+  DGtal::Display3D::GrayScaleImage aGSImage(anImage, DGtal::Display3D::zDirection);
   display.addGrayScaleImage(aGSImage);
 }
 // ImageContainerBySTLMap 
@@ -1238,8 +1237,7 @@ template <typename TDomain, typename TValue>
 inline
 void DGtal::Display3DFactory::draw( Display3D & display, const DGtal::ImageContainerBySTLVector<TDomain, TValue> anImage){
   ASSERT(TDomain::Space::dimension == 2);
-  DGtal::Display3D::GrayScaleImage aGSImage; 
-  aGSImage.fillImageDataAndParam(anImage, DGtal::Display3D::zDirection);
+  DGtal::Display3D::GrayScaleImage aGSImage (anImage, DGtal::Display3D::zDirection);
   display.addGrayScaleImage(aGSImage);
 }
 // ImageContainerBySTLVector
@@ -1363,7 +1361,8 @@ DGtal::Display3DFactory::draw( Display3D & display, const DGtal::UpdateImageData
 void 
 inline
 DGtal::Display3DFactory::draw( Display3D & display, const DGtal::UpdateImagePosition & anUpdate ){
-    display.updateOrientationGrayScaleImage(anUpdate.myIndex, anUpdate.myPosX, anUpdate.myPosY, anUpdate.myPosZ, anUpdate.myNewDirection);
+    display.updateOrientationGrayScaleImage(anUpdate.myIndex, anUpdate.myPosXBottomLeft, anUpdate.myPosYBottomLeft, 
+					    anUpdate.myPosZBottomLeft, anUpdate.myNewDirection);
 }
 
 
