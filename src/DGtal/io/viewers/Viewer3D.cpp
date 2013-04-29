@@ -108,6 +108,8 @@ DGtal::Viewer3D::drawWithNames()
 void
 DGtal::Viewer3D::draw()
 {
+
+
   glPushMatrix();
   glMultMatrixd ( manipulatedFrame()->matrix() );
   
@@ -237,21 +239,12 @@ DGtal::Viewer3D::draw()
  
 
   for(unsigned int i=0; i< myVectTextureImage.size(); i++){
-    GLGrayScaleTextureImage textureImg =  myVectTextureImage.at(i);
+    GLGrayScaleTextureImage &textureImg =  myVectTextureImage.at(i);
     glPushName (  textureImg.myTextureName );  
-    glEnable ( GL_LIGHTING );  
-    
-    //GLfloat ambientLight[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-    //glLightModelfv(GL_LIGHT_MODEL_TWO_SIDE,ambientLight);
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-    
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glBindTexture(GL_TEXTURE_2D, textureImg.myTextureName);
-    glBegin(GL_QUADS);
-    //    float mat_ambient [4] = {0.7f, 0.7f, 0.7f, 1.0f};
-    //glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-
+    glBegin(GL_QUADS);   
     glColor4ub ( 255.0, 255.0, 255.0, 255.0 );
     glNormal3d(textureImg.vectNormal[0], textureImg.vectNormal[1], textureImg.vectNormal[2]);
     glTexCoord2f(0, 0);
@@ -264,7 +257,6 @@ DGtal::Viewer3D::draw()
     glVertex3f(textureImg.x4, textureImg.y4, textureImg.z4);
     glEnd();
     glDisable(GL_TEXTURE_2D);
-    glDisable ( GL_LIGHTING );  
 
   }
   
@@ -320,12 +312,14 @@ DGtal::Viewer3D::init()
   setKeyDescription ( Qt::Key_B, "Switch background color with White/Black colors." );
   setKeyDescription ( Qt::Key_C, "Show camera informations." );
   setKeyDescription ( Qt::Key_R, "Reset default scale for 3 axes to 1.0f." );
-  
-  myTextureInitiated=false;
+    
  
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+  
+  
   setMouseBindingDescription ( Qt::ShiftModifier+Qt::RightButton, "Delete the mouse selected list." );
   setManipulatedFrame ( new ManipulatedFrame() );
-
+  
 
 }
 
@@ -476,39 +470,52 @@ DGtal::Viewer3D::updateList ( bool needToUpdateBoundingBox )
 	  //z+
 	  glNormal3f ( 0.0, 0.0, 1.0 );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
+	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
 	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
-      	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
+
+      	  
 	  //z-
 	  glNormal3f ( 0.0, 0.0, -1.0 );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
+
+
 	  //x+
 	  glNormal3f ( 1.0, 0.0, 0.0 );
 	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
 	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
+
+
 	  //x-
 	  glNormal3f ( -1.0, 0.0, 0.0 );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
+
+
 	  //y+
 	  glNormal3f ( 0.0, 1.0, 0.0 );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y+_width, ( *s_it ).z+_width );
+
+
 	  //y-
 	  glNormal3f ( 0.0, -1.0, 0.0 );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
-	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
 	  glVertex3f ( ( *s_it ).x-_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z-_width );
+	  glVertex3f ( ( *s_it ).x+_width, ( *s_it ).y-_width, ( *s_it ).z+_width );
+
+	  
+
         }
       glEnd();
       glEndList();
@@ -730,18 +737,13 @@ DGtal::Viewer3D::updateList ( bool needToUpdateBoundingBox )
 
 
 
-  //Delete potential old texture  buffer
-  for(unsigned int i=0; i< myVectTextureImage.size(); i++){
-    GLGrayScaleTextureImage textureImg =  myVectTextureImage.at(i);
-    delete [] textureImg.myTextureImageBuffer;
-  }
   
   myVectTextureImage.clear();
   
   //Filling new image texture from myGSImageList
   
   for(unsigned int i=0; i<myGSImageList.size(); i++){
-    GrayScaleImage aGSImage = myGSImageList.at(i);
+    GrayScaleImage & aGSImage = myGSImageList.at(i);
     GLGrayScaleTextureImage textureImg(aGSImage); 
     
     glGenTextures(1, &textureImg.myTextureName);
