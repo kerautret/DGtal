@@ -118,8 +118,9 @@ public:
     typedef typename TNewDomain::Point Point;
     typedef TNewValue Value;
 
-    BOOST_CONCEPT_ASSERT(( CUnaryFunctor<TFunctorD, typename TImageContainer::Point, Point> )); 
-    BOOST_CONCEPT_ASSERT(( CUnaryFunctor<TFunctorV, typename TImageContainer::Value, Value> ));
+  
+    BOOST_CONCEPT_ASSERT(( CUnaryFunctor<TFunctorD, Point, typename TImageContainer::Point> )); 
+    BOOST_CONCEPT_ASSERT(( CUnaryFunctor<TFunctorV, typename TImageContainer::Value,Value  > ));
 
     ///Types copied from the container
     typedef TImageContainer ImageContainer;
@@ -130,7 +131,7 @@ public:
 
 public:
 
-    ConstImageAdapter(ImageContainer &anImage, const Domain &aDomain, const TFunctorD &aFD, const TFunctorV &aFV):
+    ConstImageAdapter(const ImageContainer &anImage, const Domain &aDomain, const TFunctorD &aFD, const TFunctorV &aFV):
             myImagePtr(&anImage), mySubDomainPtr(&aDomain), myFD(&aFD), myFV(&aFV)
     {
 #ifdef DEBUG_VERBOSE
@@ -227,6 +228,12 @@ public:
     {
         return (myImagePtr->isValid() );
     }
+
+  
+    /**
+     * @return the style name used for drawing this object.
+     */
+    std::string className() const;
 
 
     /**
