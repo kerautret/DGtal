@@ -465,13 +465,12 @@ namespace DGtal
     // ------------------------- Private Datas --------------------------------
   private:
 
-
     GLuint myListToAff;
     unsigned int myNbListe;
     qglviewer::Vec myOrig, myDir, myDirSelector, mySelectedPoint;
     QPoint myPosSelector;
     std::vector<GLGrayScaleTextureImage> myVectTextureImage;
-      
+    bool myIsDoubleFaceRendering;
 
 
   }; // end of class Viewer3D
