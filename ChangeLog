@@ -11,6 +11,8 @@
     - The "boost program option library" dependency was removed.
     - DGtal needs boost >= 1.46
 
+* Package IO
+	- New GenericReader and Generic Writer for both 2D, 3D and ND images.
 
 *Geometry Package*
     - Generic adapter to transform a metric (model of CMetric) with monotonic (see doc)
