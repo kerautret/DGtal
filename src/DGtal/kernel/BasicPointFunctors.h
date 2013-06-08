@@ -177,7 +177,85 @@ namespace DGtal
 
 
 
-} // namespace DGtal
+  /**
+   * Create a special Point Functor that add one dimension to a 2D
+   *  point and apply a rotation of angle alpha to the resulting 3D
+   *  point according a given direction and a center.
+      *
+   * @tparam TSpace type for the space where must lie the projected point
+   *
+   */
+  template <typename TDomain, typename TInteger =  DGtal::int32_t >
+  class SliceRotator2D
+  {
+  public:
+        
+    typedef SpaceND< 3, TInteger>  Space;
+    typedef typename Space::Dimension Dimension; 
+    typedef typename Space::Point Point; 
+    typedef typename Space::Integer Integer; 
+    
+    /** 
+     * Constructor.
+     * @param  posDimAdded  position of insertion of the new dimension.
+     * @param sliceIndex the value that is used to fill the dimension for a given N-1 point (equivalently the slice index).  
+     */
+    // dimRotated dim of the axis of rotation i.e point[dimRotated] = cst;
+    
+    SliceRotator2D( Dimension dimAdded, TDomain aDomain3DImg, Integer sliceIndex,  Dimension dimRotated, double angle, Point center):
+      myPosDimAdded(dimAdded), mySliceIndex(sliceIndex), myDomain(aDomain3DImg), 
+      myDimRotated(dimRotated), myAngle(angle), myCenter(center) {};
+    
+    /** 
+     * The operator just recover the ND Point associated to the slice parameter.
+     * @param[in] aPoint point of the input domain (of dimension N-1).
+     * 
+     * @return the point of dimension N.
+     */
+    template <typename TPointDimMinus>
+    inline
+    Point  operator()(const TPointDimMinus& aPoint) const
+    {
+      Point pt;
+      Dimension pos=0;
+      std::vector<Dimension> indexesRotate;
+      for( Dimension i=0; i<pt.size(); i++){
+	if(i!=myPosDimAdded){
+	  pt[i]= aPoint[pos];
+	  pos++; 
+	}else{
+	  pt[i]=mySliceIndex;
+	}
+      }
+      for( Dimension i=0; i<pt.size(); i++){
+	if(i!=myDimRotated)
+	  indexesRotate.push_back(i);
+      }
+      double d1 = pt[indexesRotate[0]] - myCenter[indexesRotate[0]];
+      double d2 = pt[indexesRotate[1]] - myCenter[indexesRotate[1]];
+      
+      pt[indexesRotate[0]] = myCenter[indexesRotate[0]] + d1*cos(myAngle)-d2*sin(myAngle) ; 
+      pt[indexesRotate[1]] = myCenter[indexesRotate[1]] + d1*sin(myAngle)+d2*cos(myAngle) ; 
+      
+      if(myDomain.isInside(pt))
+	return pt;
+      else
+	return  Point(0,0,0);
+    }
+  private:
+    // position of insertion of the new dimension
+     Dimension myPosDimAdded;
+    // the index of the slice associated to the new domain.
+    Integer mySliceIndex;
+    TDomain myDomain;
+    Point myCenter;
+    double myAngle;
+    Dimension myDimRotated;
+  };
+
+
+
+} // namespace dgtal
 
 
 ///////////////////////////////////////////////////////////////////////////////
