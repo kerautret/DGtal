@@ -258,10 +258,10 @@ void
 DGtal::Display3D< Space ,KSpace >::addQuad(const RealPoint &p1, const RealPoint &p2,
 					   const RealPoint &p3, const RealPoint &p4)
 {
-  if(myQuadSetList.size() == 0 )
-    {
+  //  if(myQuadSetList.size() == 0 )
+  // {
       createNewQuadList("quad");
-    }
+      // }
   QuadD3D aQuad;
   updateBoundingBox(p1);
   updateBoundingBox(p2);

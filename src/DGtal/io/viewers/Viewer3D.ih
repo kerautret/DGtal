@@ -704,7 +704,14 @@ DGtal::Viewer3D<Space, KSpace>::draw()
   unsigned int nbListOfPrimitives = Viewer3D<Space, KSpace>::myLineSetList.size() +Viewer3D<Space, KSpace>::myCubeSetList.size()+ Viewer3D<Space, KSpace>::myBallSetList.size();
   glLineWidth ( Viewer3D<Space, KSpace>::myMeshDefaultLineWidth /distCam );
   glDisable(GL_CULL_FACE);
-  glCallList ( GLuint ( myListToAff+nbListOfPrimitives+1 ) );
+  unsigned int numQ=1;
+  for (typename std::vector<std::vector<typename Viewer3D<Space, KSpace>::QuadD3D> >::iterator it = Viewer3D<Space, KSpace>::myQuadSetList.begin(); it != Viewer3D<Space, KSpace>::myQuadSetList.end(); it++)
+    {
+      glCallList ( GLuint ( myListToAff+nbListOfPrimitives+numQ ) );
+      numQ++;
+    }
+  trace.info() << "Nb list =" << numQ << std::endl;
+  nbListOfPrimitives+=numQ;
   if(myViewWire)
     {
       glLineWidth ( Viewer3D<Space, KSpace>::myMeshDefaultLineWidth /distCam );
@@ -1211,15 +1218,17 @@ DGtal::Viewer3D<Space, KSpace>::updateList ( bool needToUpdateBoundingBox )
   unsigned int nbListOfPrimitives = Viewer3D<Space, KSpace>::myLineSetList.size() +Viewer3D<Space, KSpace>::myCubeSetList.size()+ Viewer3D<Space, KSpace>::myBallSetList.size();
 
   // First List (quad faces)
-  glNewList ( GLuint ( myListToAff +nbListOfPrimitives + 1 ), GL_COMPILE );
-  myNbListe++;
-  glPushName ( myNbListe );
-
-  glEnable ( GL_LIGHTING );
-  glBegin ( GL_QUADS );
-
+  unsigned int numQ=0;
   for (typename std::vector<std::vector<typename Viewer3D<Space, KSpace>::QuadD3D> >::iterator it = Viewer3D<Space, KSpace>::myQuadSetList.begin(); it != Viewer3D<Space, KSpace>::myQuadSetList.end(); it++)
     {
+      numQ++;
+      glNewList ( GLuint ( myListToAff +nbListOfPrimitives + numQ ), GL_COMPILE );
+      myNbListe++;
+      glPushName ( myNbListe );
+      
+      glEnable ( GL_LIGHTING );
+      glBegin ( GL_QUADS );
+      
       for (typename std::vector<typename Viewer3D<Space, KSpace>::QuadD3D>::iterator it_s = it->begin(); it_s != it->end(); it_s++)
         {
           glColor4ub ( it_s->color.red(), it_s->color.green(), it_s->color.blue(), it_s->color.alpha() );
@@ -1229,10 +1238,11 @@ DGtal::Viewer3D<Space, KSpace>::updateList ( bool needToUpdateBoundingBox )
           glVertex3f ( it_s->point3[0], it_s->point3[1], it_s->point3[2] );
           glVertex3f ( it_s->point4[0], it_s->point4[1], it_s->point4[2] );
         }
+      glEnd();
+      glEndList();
+      
     }
-  glEnd();
-  glEndList();
-
+  nbListOfPrimitives+= numQ-1;
   // Second list: Wired version of quad face.
   glNewList ( GLuint ( myListToAff +nbListOfPrimitives + 2 ), GL_COMPILE );
   myNbListe++;
