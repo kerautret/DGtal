@@ -64,6 +64,7 @@
 *Topology Package*
 
     - small fix in ImplicitDigitalSurface.
+    - New methods to fill the interior/exterior of digital contours (in the Surface class of topology/helpers).
 
 *Math Package*
 
