@@ -22,14 +22,28 @@ namespace DGtal {
 
 Table of contents:
 
+@section secttuto1 Basic guides
+
 1. \ref tutoFileGridCurveRanges
 2. \ref tutoImageRegionDT
 3. \ref tutoImageGridCurveEstimator
 4. \ref tutoShapeGridCurveEstimator
 5. \ref tutoImageGridCurveExtraction
 6. \ref tutoImageGridVolume3dVolViewer
+<<<<<<< HEAD
 7. \ref tutoFMMErosion
 8. \ref tutoImageManipulations
+=======
+
+
+@section secttuto2 Tutorials
+
+1. \ref tutoFMMErosion
+2. \ref tutoPolyhedralisation
+3. \ref tutoVolDTGranulometry
+4. \ref tutoAreaSurface
+
+>>>>>>> 93a007ed6b3193074693535544dda8ead5186a8f
 */
 
 }
