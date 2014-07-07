@@ -130,6 +130,8 @@
 - *Topology Package*
   - small fix in ImplicitDigitalSurface. (Jacques-Olivier Lachaud,
     [#803](https://github.com/DGtal-team/DGtal/pull/803))
+  - New methods to fill the interior/exterior of digital contours (in the Surface class of topology/helpers).     [#827](https://github.com/DGtal-team/DGtal/pull/827))
+
 
 - *Image Package*
   - Fixing template types in ImageAdapter (David Coeurjolly,
