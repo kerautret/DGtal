@@ -69,10 +69,10 @@ namespace DGtal
  * As other solutions like \cite DebledRennessonBlurred2005 the
  * algorithm given here is based on the height/width computation of
  * the convex hull computed from a given set of points. The actual
- * implementation exploits the height/width maintenance defined from
+ * implementation exploits the height/width update defined from
  * the \cite FaureTangential2008 (see \cite FaureTangential2008 page
  * 363) which reduces the complexity from \f$O(n\ log\ n) \f$ into
- * \f$O( log\ n) \f$.  Note that the convexhull maintenance in linear
+ * \f$O( log\ n) \f$.  Note that the convexhull update in linear
  * time (with point substraction) proposed by Buzer \cite
  * lilianComputing2007 is not yet implemented.
  *
@@ -126,12 +126,19 @@ class AlphaThickSegmentComputer
 
   // ----------------------- public types --------------------------------------
   BOOST_STATIC_ASSERT(( TInputPoint::dimension == 2 ));
-  
+  BOOST_CONCEPT_ASSERT((boost_concepts::ReadableIterator<TConstIterator>)); 
+ 
 public:
+  /**
+   * Type of input point.
+   **/
   typedef TInputPoint InputPoint;
-  typedef InputPoint InputVector;
   
+  /**
+   * The container type of Input Point
+   **/
   typedef std::vector< InputPoint > InputPointContainer;
+  
   typedef typename InputPointContainer::size_type Size;
   typedef typename InputPointContainer::const_iterator ContainerConstIterator;
   typedef typename InputPointContainer::iterator Iterator;
@@ -140,7 +147,7 @@ public:
   
   /**
    * Type of embedded points 
-   * @see getBasicBoundingBox, getRealBoudingBox, getBoundingBoxFromExtremPoints
+   * @see getBoundingBox, getBoundingBoxFromExtremPoints
    */
   typedef DGtal::PointVector<2, double> PointD; 
 
@@ -152,7 +159,7 @@ public:
 
 private: 
   struct State{
-    std::deque<InputPoint> melkmanQueue; /** Melkman algorithm main dequeu */
+    std::deque<InputPoint> melkmanQueue; /** Melkman algorithm main deque */
     InputPoint lastFront; /** the last point added at the front of the alpha thick segment */
     InputPoint lastBack; /** the last point added at the back of the alpha thick segment */
     InputPoint edgePh; /** one the convexhull edge point of the (edge, vertex) pair used to compute the convexhull height */
@@ -238,7 +245,7 @@ public:
    *
    *
    */  
-  void init(double aThickness);  
+  void init(const double aThickness);  
   
   
 
@@ -301,13 +308,6 @@ public:
    * @see maxSize
    */
   Size max_size() const;
-
-  
-  /**
-   * same as max_size
-   * @return the maximal allowed number of points in the current alpha thick segment.
-   */
-  Size maxSize() const;  
   
 
 
@@ -403,7 +403,27 @@ public:
    */
   bool isValid() const;
   
+ 
+  /**
+   * Get the extremity points of the segment. These points are not
+   * necessary the last point of the segment.
+   *
+   **/
+  std::pair<InputPoint, InputPoint>  getExtremityPoints() const;
+  
 
+  /**
+   * @return the antipodal leaning points of the segment (given in the
+   * convexhull). The result is given as a pair for which the first
+   * element is the pair containing the edge antipodal points and the
+   * second element is the vertex of the antipodal pair (see section \ref
+   * moduleAlphaThickSegmentRecoIntro for an illustration of such an
+   * antipodal pair).
+   **/
+  std::pair<std::pair<InputPoint, InputPoint>, InputPoint>
+  getAntipodalLeaningPoints() const;
+  
+  
   /**
    * Computes the paralell strip params from the current state of the segment.
    * @param[out] mu the minimal value of N.X (with N is the normal vector of the segment).
@@ -415,16 +435,9 @@ public:
   
  
    /**
-   * @return the segment length defined from the basic bouding box (@see getBasicBoundingBox).
+   * @return the segment length defined from the bouding box (@see getBoundingBox).
    **/
-  double getBasicLength() const;
-
-
-  /**
-   * @return the segment length defined from the real bouding box (@see getRealBoudingBox).
-   *
-   **/
-  double getRealLength() const;
+  double getSegmentLength() const;
   
 
   /**
@@ -474,9 +487,10 @@ public:
   
   
   /**
-   * Computes the basic segment bounding box according to the segment
-   * extremity points (the last points added to the front and to the
-   * back).
+   * Computes the segment bounding box defined from the extremity
+   * points computed after a scan of the current convexhull. Note that
+   * this bouding box differs from the begin/end points bounding box
+   * when a large amount of noise are give in the initial curve.
    *
    * @param[out] pt1LongestSegment1 the first point of one of the longest segment.
    * @param[out] pt2LongestSegment1 the second point of one of the longest segment.
@@ -487,33 +501,12 @@ public:
    * out parameters pt1LongestSegment1, pt2LongestSegment1,
    * pt3LongestSegment1, pt4LongestSegment1.
    **/
-  void getBasicBoundingBox(PointD &pt1LongestSegment1,
-                           PointD &pt2LongestSegment1,
-                           PointD &pt3LongestSegment2,
-                           PointD &pt4LongestSegment2) const;
+  void getBoundingBox(PointD &pt1LongestSegment1,
+                      PointD &pt2LongestSegment1,
+                      PointD &pt3LongestSegment2,
+                      PointD &pt4LongestSegment2) const;
   
-  
-  /**
-   * Computes the real bounding box according to the real extremity
-   * points of the segment. The real extremity points are computed
-   * after a scan of all the segment points. The real bounding box can
-   * differs of the basic bounding box when a large amount of noise
-   * are give in the initial curve.
-   *
-   * @param[out] pt1LongestSegment1 the first point of one of the longest segment.
-   * @param[out] pt2LongestSegment1 the second point of one of the longest segment.
-   * @param[out] pt3LongestSegment2 the first point of one of the second longest segment.
-   * @param[out] pt4LongestSegment2 the second point of one of the second longest segment.
-   *
-   * @note the segment bounding box can be drawn with the sequence of
-   * out parameters pt1LongestSegment1, pt2LongestSegment1,
-   * pt3LongestSegment1, pt4LongestSegment1.
-   **/
-  void  getRealBoundingBox(PointD &pt1LongestSegment1,
-                          PointD &pt2LongestSegment1,
-                          PointD &pt3LongestSegment2,
-                          PointD &pt4LongestSegment2) const;
-  
+    
   
   
 

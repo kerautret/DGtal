@@ -121,7 +121,41 @@ bool testAlphaThickSegmentConvexHullAndBox()
   aBoard.saveEPS("testAlphaThickSegmentComputer_Convexhull.eps"); 
   trace.info() << " Alpha Thick with alpha 5, size (awaited be 41) = " << anAlphaThickSegmentComputer.getNumberSegmentPoints();
   res = anAlphaThickSegmentComputer.getNumberSegmentPoints()==41;
+  nbok += res ? 1 : 0; 
+  nb++;
+  trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
+  trace.endBlock();
   
+  trace.beginBlock("Testing access to extremity points");
+  trace.info() << "First extremity point: " << anAlphaThickSegmentComputer.getExtremityPoints().first << 
+    " ( should be " << *(aContour.begin())<<  ")" << std::endl;
+  trace.info() << "Second extremity point: " << anAlphaThickSegmentComputer.getExtremityPoints().second << 
+    " ( should be (80, 18) )" << std::endl;
+  
+  res = anAlphaThickSegmentComputer.getExtremityPoints().first == *(aContour.begin())&&
+        anAlphaThickSegmentComputer.getExtremityPoints().second == Z2i::Point(80,18);
+  nbok += res ? 1 : 0; 
+  nb++;
+  trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
+  trace.endBlock();
+
+
+  trace.beginBlock("Testing access to anti podal points");
+  std::pair<std::pair<Z2i::Point, Z2i::Point>, 
+            Z2i::Point> pairAntipodal =  anAlphaThickSegmentComputer.getAntipodalLeaningPoints();
+  
+  Z2i::Point p = pairAntipodal.first.first; 
+  Z2i::Point q = pairAntipodal.first.second; 
+  Z2i::Point s = pairAntipodal.second;   
+  aBoard.setPenColor(DGtal::Color::Red);
+  aBoard.drawLine(p[0], p[1], q[0], q[1]);
+  aBoard.fillCircle(s[0], s[1], 0.2);
+  aBoard.saveEPS("testAlphaThickSegmentComputer_ConvexhullAntipodal.eps"); 
+    
+  trace.info() << "Antipodal pair: p " << p << ", q:" << q << ", s: "<< s << std::endl; 
+  trace.info() << "Should be  " << Z2i::Point(78,16) << " " << Z2i::Point(79,6) << Z2i::Point(83,13) <<std::endl;
+
+  res = p==Z2i::Point(78,16) && q==Z2i::Point(79,6) && s == Z2i::Point(83,13);
   nbok += res ? 1 : 0; 
   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
@@ -138,7 +172,6 @@ bool testAlphaThickSegmentComputerFloatingPointContour()
 {
   unsigned int nbok = 0;
   unsigned int nb = 0;
-  
   Board2D aBoard;
   typedef  AlphaThickSegmentComputer< Z2i::RealPoint> AlphaThickSegmentComputer2D;
   typedef  AlphaThickSegmentComputer< Z2i::RealPoint>::Primitive Primitive;
