@@ -870,7 +870,7 @@ sMakeBoundary( SCellSet & aBoundary,
                                                    k, true ));
             }
         }
-      while ( aKSpace.uNext( p, dir_low_uid, dir_up_uid ) );
+      while ( aKSpace.uNext( p, aKSpace.uFirst(p), aKSpace.uLast(p) ) );
     }
 }
 
