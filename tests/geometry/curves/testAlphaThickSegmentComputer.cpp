@@ -318,6 +318,58 @@ bool testAlphaThickSegmentFreeman()
 
 
 
+
+/**
+ * Test the segment initialisation (in particular init from 3 points)
+ */
+bool testAlphaThickSegmentInitialisation()
+{
+  unsigned int nbok = 0;
+  unsigned int nb = 0;
+
+  Board2D aBoard;
+  typedef  AlphaThickSegmentComputer< Z2i::Point > AlphaThickSegmentComputer2D;
+  trace.beginBlock ( "Testing segment initialisation from 3 points." );
+  bool res = true;
+  std::vector<Z2i::Point> v; 
+  v.push_back(Z2i::Point(17,12));
+  v.push_back(Z2i::Point(18,13));
+  v.push_back(Z2i::Point(19,12));
+  v.push_back(Z2i::Point(20,12));
+
+
+  AlphaThickSegmentComputer2D anAlphaThickSegmentComputer;
+  anAlphaThickSegmentComputer.init(v.begin(), 1.5);
+  
+  unsigned int nbPtAdded = 0;
+  while (anAlphaThickSegmentComputer.end() != v.end() && 
+         anAlphaThickSegmentComputer.extendFront()){nbPtAdded++;}  
+  
+  std::pair<std::pair<Z2i::Point, Z2i::Point>, 
+            Z2i::Point> pairAntipodal =  anAlphaThickSegmentComputer.getAntipodalLeaningPoints();
+  Z2i::Point p = pairAntipodal.first.first; 
+  Z2i::Point q = pairAntipodal.first.second; 
+  Z2i::Point s = pairAntipodal.second;   
+  
+  trace.info() << "pair antipodal p:" << p << std::endl;
+  trace.info() << "pair antipodal q:" << q << std::endl;
+  trace.info() << "pair antipodal S:" << s << std::endl;
+
+  trace.info()<< "Nb points added to the segment: "<< anAlphaThickSegmentComputer.getNumberSegmentPoints() << "(should be 4)" << std::endl;
+  trace.info()<< anAlphaThickSegmentComputer<< std::endl; 
+  res = anAlphaThickSegmentComputer.getNumberSegmentPoints() == 4;
+  nbok += res ? 1 : 0; 
+  nb++;
+  trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
+  trace.endBlock();
+
+  return nbok == nb;
+}
+
+
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Standard services - public :
 
@@ -329,8 +381,9 @@ int main( int argc, char** argv )
     trace.info() << " " << argv[ i ];
   trace.info() << endl;
 
-  bool res = testAlphaThickSegmentConvexHullAndBox() && testAlphaThickSegmentComputerFloatingPointContour() 
-    && testAlphaThickSegmentFreeman();
+  bool res = testAlphaThickSegmentConvexHullAndBox() & testAlphaThickSegmentComputerFloatingPointContour() 
+    & testAlphaThickSegmentFreeman() & testAlphaThickSegmentConvexHullAndBox() &
+    testAlphaThickSegmentInitialisation();
   trace.emphase() << ( res ? "Passed." : "Error." ) << endl;
 
   

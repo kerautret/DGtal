@@ -609,7 +609,24 @@ melkmanInit()
           myState.melkmanQueue.push_back(aPoint2);
           myState.melkmanQueue.push_back(aPoint1); 
         }  
+
       myState.melkmanQueue.push_back(aPoint3);
+
+      double d1 = (myState.melkmanQueue[0]-myState.melkmanQueue[1]).norm();
+      double d2 = (myState.melkmanQueue[1]-myState.melkmanQueue[2]).norm();
+      double d3 = (myState.melkmanQueue[2]-myState.melkmanQueue[3]).norm();
+      if(d2>d1 && d2>d3){
+        myState.melkmanQueue.pop_front();
+        myState.melkmanQueue.push_back(myState.melkmanQueue[0]);
+
+      }else if (d3 > d2 && d3 > d1){
+        myState.melkmanQueue.pop_front();
+        myState.melkmanQueue.push_back(myState.melkmanQueue[0]);
+
+        myState.melkmanQueue.pop_front();
+        myState.melkmanQueue.push_back(myState.melkmanQueue[0]);
+      }
+
     }   
 }
 
