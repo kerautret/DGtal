@@ -676,6 +676,16 @@ protected:
   void computeExtremaPoints(const TConstIteratorG & itBegin, const TConstIteratorG & itEnd,
                             InputPoint & aFirstExtrPt, InputPoint & aLastExtrPt) const;
   
+
+  /**
+   * Computes the minimal horizontal/vertical distance of a point s on
+   * a line defined from two points p and q.
+   * 
+   * @param[in] p one of the two line points.
+   * @param[in] q another line points.
+   * @param[in] s the point for which the horizontal/vertical projected distance is computed.
+   **/
+  double computeHVDistance(const InputPoint &p, const InputPoint &q, const InputPoint &s );
   
     // ------------------------- Internals ------------------------------------
 private:

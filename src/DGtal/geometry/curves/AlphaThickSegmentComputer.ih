@@ -444,7 +444,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
   InputPoint P, Q, R, S;
   int q,s; /* [pq] is an edge and s a vertex */
   bool stop = false; /* Default is false */
-  double tmpheight, k, dMinus, dPlus;
+  double tmpheight, kv, kh, dv, dh;
   double maxDoubleValue =  std::numeric_limits<int>::max();
 
   /* Take the first edge and find the corresponding point of support */
@@ -472,12 +472,11 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
           R =  myState.melkmanQueue[ s++ ];
         }
     }
-  /* Initialize the diagonal distance */
-  k = ( Q[1] - P[1] ) * S[0] - ( Q[0] - P[0] ) * S[1] - ( Q[1] * P[0] - Q[0] * P[1] );
-  dMinus = fabs( k / (  ( Q[0] - P[0] ) + ( Q[1] - P[1] ) ) );
-  dPlus = fabs( k / (  ( Q[0] - P[0] ) - ( Q[1] - P[1] ) ) );
-  myState.convexHullHeight = ( dPlus <= dMinus ) ? dPlus : dMinus;
+  
+  /* Initialize the vertical/horizontal distance */
+  myState.convexHullHeight = computeHVDistance(P, Q, S );
   myState.edgePh = P; myState.edgeQh = Q; myState.vertexSh = S;
+
   /* We have found the first (edge,vertex) pair. Go on until cycling. */
   s--;   /* R is untouch */
   P = Q;
@@ -493,18 +492,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
           s = ( s + 1 ) % queueSize;
           R = myState.melkmanQueue[ s ] ;
         }
-      /* Update height if necessary */
-      k = ( Q[1] - P[1] ) * S[0] - ( Q[0] - P[0] ) * S[1] - ( Q[1] * P[0] - Q[0] * P[1] );
-      if( ( Q[1] - P[1] ) - ( Q[0] - P[0] ) == 0 )
-        dMinus = maxDoubleValue;
-      else
-        dMinus = fabs( k / (  ( Q[1] - P[1] ) - ( Q[0] - P[0] ) ) );
-      if( ( Q[1] - P[1] ) + ( Q[0] - P[0] ) == 0 )
-        dPlus = maxDoubleValue;
-      else
-        dPlus = fabs( k / (  ( Q[1] - P[1] ) + ( Q[0] - P[0] ) ) );
-      /* Compute new diagonal distance / sqrt(2) */
-      tmpheight = ( dPlus <= dMinus ) ? dPlus : dMinus;
+      tmpheight = computeHVDistance(P, Q, S );
       if( tmpheight < myState.convexHullHeight )
         {
           myState.convexHullHeight = tmpheight;
@@ -942,6 +930,39 @@ computeExtremaPoints(const TConstIteratorG & itBegin,
     }
   
 }
+
+template< typename TInputPoint, typename TConstIterator>
+double
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::
+computeHVDistance(const TInputPoint &p, const TInputPoint &q, const TInputPoint &s )
+{
+  double  kv, kh, dv, dh;
+  double maxDoubleValue =  std::numeric_limits<int>::max();
+  
+  if(p[0]-q[0]==0)
+    {
+      dv = maxDoubleValue;
+    }
+  else
+    {
+      kv = (-q[1]+p[1])*s[0] - q[0]*p[1]+p[0]*q[1];
+      dv = fabs(kv/(p[0]-q[0])-s[1]);
+    }
+  if(q[1]-p[1]==0)
+    {
+      dh = maxDoubleValue;
+    }
+  else
+    {
+      kh = (-q[1]+p[1])*s[0] - q[0]*p[1]+p[0]*q[1];
+      dh = fabs(kh/(q[1]-p[1])-s[0]);
+    }  
+  return  ( dv <= dh ) ? dv : dh;
+}
+  
+
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
