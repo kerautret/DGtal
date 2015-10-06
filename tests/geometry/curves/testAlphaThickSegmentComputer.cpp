@@ -119,10 +119,10 @@ bool testAlphaThickSegmentConvexHullAndBox()
   }
   
   aBoard.saveEPS("testAlphaThickSegmentComputer_Convexhull.eps"); 
-  trace.info() << " Alpha Thick with alpha 5, size (awaited be 41) = " << anAlphaThickSegmentComputer.getNumberSegmentPoints();
-  res = anAlphaThickSegmentComputer.getNumberSegmentPoints()==41;
+  trace.info() << " Alpha Thick with alpha 5, size (awaited be 13) = " << anAlphaThickSegmentComputer.getNumberSegmentPoints();
+  res = anAlphaThickSegmentComputer.getNumberSegmentPoints()==13;
   nbok += res ? 1 : 0; 
-  nb++;
+   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
   trace.endBlock();
   
@@ -130,10 +130,10 @@ bool testAlphaThickSegmentConvexHullAndBox()
   trace.info() << "First extremity point: " << anAlphaThickSegmentComputer.getExtremityPoints().first << 
     " ( should be " << *(aContour.begin())<<  ")" << std::endl;
   trace.info() << "Second extremity point: " << anAlphaThickSegmentComputer.getExtremityPoints().second << 
-    " ( should be (80, 18) )" << std::endl;
+    " ( should be (82, 13) )" << std::endl;
   
   res = anAlphaThickSegmentComputer.getExtremityPoints().first == *(aContour.begin())&&
-        anAlphaThickSegmentComputer.getExtremityPoints().second == Z2i::Point(80,18);
+        anAlphaThickSegmentComputer.getExtremityPoints().second == Z2i::Point(82,13);
   nbok += res ? 1 : 0; 
   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
@@ -153,9 +153,9 @@ bool testAlphaThickSegmentConvexHullAndBox()
   aBoard.saveEPS("testAlphaThickSegmentComputer_ConvexhullAntipodal.eps"); 
     
   trace.info() << "Antipodal pair: p " << p << ", q:" << q << ", s: "<< s << std::endl; 
-  trace.info() << "Should be  " << Z2i::Point(78,16) << " " << Z2i::Point(79,6) << Z2i::Point(83,13) <<std::endl;
+  trace.info() << "Should be  " << Z2i::Point(82,13) << " " << Z2i::Point(81,12) << Z2i::Point(82,8) <<std::endl;
 
-  res = p==Z2i::Point(78,16) && q==Z2i::Point(79,6) && s == Z2i::Point(83,13);
+  res = p==Z2i::Point(82,13) && q==Z2i::Point(81,12) && s == Z2i::Point(82,8);
   nbok += res ? 1 : 0; 
   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
@@ -174,7 +174,7 @@ bool testAlphaThickSegmentConvexHullAndBox()
   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
   trace.endBlock();
-  return true;//nbok == nb;
+  return nbok == nb;
 }
 
 
@@ -196,7 +196,7 @@ bool testAlphaThickSegmentComputerFloatingPointContour()
   aContour = PointListReader<Z2i::RealPoint>::getPointsFromFile(fileContour);
   
   AlphaThickSegmentComputer2D anAlphaThickSegmentComputer;
-  anAlphaThickSegmentComputer.init(aContour.begin()+10, 2);
+  anAlphaThickSegmentComputer.init(aContour.begin()+10, 2 );
   
   while (anAlphaThickSegmentComputer.end()!= aContour.end() && 
          anAlphaThickSegmentComputer.extendFront()){
@@ -226,29 +226,26 @@ bool testAlphaThickSegmentComputerFloatingPointContour()
       aBoard << *it; 
     }    
   }
-  trace.info() << "Nb contour points in the segment parallel strip (awaited 36)  = " << nbInStrip << std::endl;
+  trace.info() << "Nb contour points in the segment parallel strip (awaited 32)  = " << nbInStrip << std::endl;
 
-  nbok += nbInStrip==36;
+  nbok += nbInStrip==32;
   nb++;
-  
-  nbok += anAlphaThickSegmentComputer.getNumberSegmentPoints()==35 ? 1 : 0; 
+  nbok += anAlphaThickSegmentComputer.getNumberSegmentPoints()==31 ? 1 : 0; 
   nb++;
  
-  trace.info() << "Segment size (awaited 35): " << anAlphaThickSegmentComputer.getNumberSegmentPoints() << std::endl;  
+  trace.info() << "Segment size (awaited 31): " << anAlphaThickSegmentComputer.getNumberSegmentPoints() << std::endl;  
   aBoard.saveEPS("testAlphaThickSegmentComputer_FloatingPt.eps"); 
   
-  nbok += anAlphaThickSegmentComputer.getNumberSegmentPoints()==35 ? 1 : 0; 
-  nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
   trace.endBlock(); 
-  return true; //nbok == nb;
+  return  nbok == nb;
 }
 
 
 
 
 
-/**
+/**  
  * Test  alpha thick segment computer on Freeman Chain.
  */
 bool testAlphaThickSegmentFreeman()
@@ -274,7 +271,7 @@ bool testAlphaThickSegmentFreeman()
   
   
   AlphaThickSegmentComputer2D anAlphaThickSegmentComputer;
-  anAlphaThickSegmentComputer.init(fc.begin(),  150.0);
+   anAlphaThickSegmentComputer.init(fc.begin(),  110.0);
   while (anAlphaThickSegmentComputer.end() != fc.end() && 
          anAlphaThickSegmentComputer.extendFront()){
   }
@@ -283,8 +280,8 @@ bool testAlphaThickSegmentFreeman()
   // Display segment 
   aBoard << SetMode((*anAlphaThickSegmentComputer.begin()).className(), "Grid"); 
   aBoard << anAlphaThickSegmentComputer;
-  trace.info() << "Segment size (awaited 642): " << anAlphaThickSegmentComputer.getNumberSegmentPoints() << std::endl;  
-  nbok += anAlphaThickSegmentComputer.getNumberSegmentPoints()==642 ? 1 : 0; 
+  trace.info() << "Segment size (awaited 855): " << anAlphaThickSegmentComputer.getNumberSegmentPoints() << std::endl;  
+  nbok += anAlphaThickSegmentComputer.getNumberSegmentPoints()==855 ? 1 : 0; 
   nb++;  
   
   // Display points inside the parallel strip
@@ -301,17 +298,17 @@ bool testAlphaThickSegmentFreeman()
   aBoard.setPenColor(DGtal::Color::Green);
   aBoard.fillCircle( (*(fc.begin()))[0],(*(fc.begin()))[1], 1.0) ;
       
-  trace.info() << "Nb contour points in the segment parallel strip  (awaited 766)  = " << nbInStrip << std::endl;
+  trace.info() << "Nb contour points in the segment parallel strip  (awaited 1132)  = " << nbInStrip << std::endl;
 
 
-  nbok +=  nbInStrip==766 ? 1 : 0; 
+  nbok +=  nbInStrip==1132 ? 1 : 0; 
   nb++;
   
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
   trace.endBlock();
   aBoard.saveEPS("testAlphaThickSegmentComputer_Freeman.eps"); 
   
-  return true;//nbok == nb; 
+  return nbok == nb; 
 
 }
 

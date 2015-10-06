@@ -507,7 +507,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
   double thickness, mu;
   PointD normal;
   computeParallelStripParams(mu, normal, thickness);
-  return thickness/normal.norm();
+  return myState.convexHullHeight;// thickness/normal.norm();
 }
 
 
