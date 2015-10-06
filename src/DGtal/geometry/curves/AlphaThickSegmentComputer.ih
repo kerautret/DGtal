@@ -444,8 +444,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
   InputPoint P, Q, R, S;
   int q,s; /* [pq] is an edge and s a vertex */
   bool stop = false; /* Default is false */
-  double tmpheight, kv, kh, dv, dh;
-  double maxDoubleValue =  std::numeric_limits<int>::max();
+  double tmpheight;
 
   /* Take the first edge and find the corresponding point of support */
   P =  myState.melkmanQueue[ 0 ] ;
@@ -507,7 +506,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanUpdateMai
   double thickness, mu;
   PointD normal;
   computeParallelStripParams(mu, normal, thickness);
-  return myState.convexHullHeight;// thickness/normal.norm();
+  return myState.convexHullHeight;
 }
 
 
@@ -567,7 +566,6 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::melkmanAddPoint(
       myState.melkmanQueue.push_back( aPoint );   /* push id onto top of deque */
     }
 }
-
 
 
 template < typename TInputPoint, typename TConstIterator>
