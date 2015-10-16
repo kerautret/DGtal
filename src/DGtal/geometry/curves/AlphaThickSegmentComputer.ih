@@ -427,11 +427,11 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::updateMainHeight
 {  
   double chThickness = DGtal::functions::Hull2D::computeHullThickness(myState.melkmanCH.begin(),
                                                                  myState.melkmanCH.end(), 
-                                                                  DGtal::functions::Hull2D::HorizontalVerticalThickness, 
+                                                                  myThicknessDefinition, 
                                                                   myState.edgePh,
                                                                   myState.edgeQh, myState.vertexSh);
-  
   return floor(chThickness / myThicknessCompPrecision + 0.5) * myThicknessCompPrecision;
+ 
 }
 
 
