@@ -3,44 +3,60 @@
 
 ## New Features / Critical Changes
 
-- *General*
+- *Configuration/General*
  - DGtal requires now to have a C++11 enabled compiler (gcc>4.6, clang
    >2.9, VS14, ...). This allows us to use new C++11 features in
    DGtal core and to have more generic and reliable code. (David
    Coeurjolly, [#1080](https://github.com/DGtal-team/DGtal/pull/1080))
+   
+ - DGtal core now compiles on Microsoft Windows, Visual Studio (only
+   VS14 or above). Many issues have been fixed for compatibility with
+   'cl' compiler. (David Coeurjolly, Jérémy Levallois,
+   [#1074](https://github.com/DGtal-team/DGtal/pull/1074))
 
 - *Base Package*
- - Traits class for containers in order to probe their category at compile time.
-   (Jacques-Olivier Lachaud, [#1079](https://github.com/DGtal-team/DGtal/pull/1079))
- - Generic set operations for arbitrary containers. You may use overloaded operators
-   like &, |, -, ^ on arbitrary containers (list, vector, unordered_set, map, etc).
+ - Traits class for containers in order to probe their category at
+   compile time.  (Jacques-Olivier Lachaud,
+   [#1079](https://github.com/DGtal-team/DGtal/pull/1079))
+
+- Generic set operations for arbitrary containers. You may use
+   overloaded operators like &, |, -, ^ on arbitrary containers (list,
+   vector, unordered_set, map, etc).  (Jacques-Olivier Lachaud,
+   [#1079](https://github.com/DGtal-team/DGtal/pull/1079))
+
+- *Topology Package*
+ - New class CubicalComplex and functions associated to
+   it. Arbitrary cubical complexes can be represented, displayed and
+   multiple operations are defined onto them: incidence, closing,
+   opening, closure, star, link, interior, boundary, set operations
+   and relations, as a collapse operation.
    (Jacques-Olivier Lachaud, [#1079](https://github.com/DGtal-team/DGtal/pull/1079))
 
+
 - *Geometry Package*
- - Hull2DHelpers: implementation of the rotating caliper algorithm to compute
-   the width (vertical/horizontal or Euclidean) of a convex hull.
-   (Bertrand Kerautret, [#1052](https://github.com/DGtal-team/DGtal/pull/1052))
- - MelkmanConvexHull: new reverse method to allow point insertions and convex
-   hull computation on both side of a point sequence.
-   (Bertrand Kerautret, [#1073](https://github.com/DGtal-team/DGtal/pull/1073))
- - LogScaleProfile: new class to represent a (multi)scale profile e.g. a sequence
-   of statistics on digital lengths parameterized by a grid resolution.
-   (Backport of the ScaleProfile class of
+ - Hull2DHelpers: implementation of the rotating caliper algorithm to
+   compute the width (vertical/horizontal or Euclidean) of a convex
+   hull.  (Bertrand Kerautret,
+   [#1052](https://github.com/DGtal-team/DGtal/pull/1052))
+
+ - MelkmanConvexHull: new reverse method to allow point insertions and
+   convex hull computation on both side of a point sequence.
+   (Bertrand Kerautret,
+   [#1073](https://github.com/DGtal-team/DGtal/pull/1073))
+
+ - LogScaleProfile: new class to represent a (multi)scale profile
+   e.g. a sequence of statistics on digital lengths parameterized by a
+   grid resolution.  (Backport of the ScaleProfile class of
    [ImaGene](https://gforge.liris.cnrs.fr/projects/imagene) ).
    (Bertrand Kerautret, Jacques-Olivier Lachaud
    [#1075](https://github.com/DGtal-team/DGtal/pull/1075))
  - IteratorCompletion provides iterators and ranges access from a basic set of methods.
    (Roland Denis, [#1029](https://github.com/DGtal-team/DGtal/pull/1029))
 
-- *Image Package*
- - ArrayImageAdapter adds a read-write image adapter from any random-access iterator,
-   e.g. from a C-array.
-   (Roland Denis, [#1029](https://github.com/DGtal-team/DGtal/pull/1029))
-
 - *Math Package*
- - MultiStatistics: new class to compute different statistics (like mean
-   variance, median) on multiple variables.
-   (Backport of the Statistics class of
+ - MultiStatistics: new class to compute different statistics (like
+   mean variance, median) on multiple variables.  (Backport of the
+   Statistics class of
    [ImaGene](https://gforge.liris.cnrs.fr/projects/imagene) ).
    (Bertrand Kerautret, Jacques-Olivier Lachaud
    [#1076](https://github.com/DGtal-team/DGtal/pull/1076))
@@ -66,6 +82,10 @@
  - Enabling circulators in SimpleRandomAccessRangeFromPoint.
    (Roland Denis, [#1060](https://github.com/DGtal-team/DGtal/pull/1060))
 
+- *Base*
+ - Deprecated OldAlias, OldClone, OldConstAlias have been removed. (David
+   Coeurjolly, [#1074](https://github.com/DGtal-team/DGtal/pull/1074))
+
 - *IO*
 
  - By default, closing a Viewer3D does not save automatically the viewer
@@ -84,7 +104,6 @@
    function) in order to see the cube primitive through the
    transparency of the ball primitives. (Bertrand Kerautret,
    [#1081](https://github.com/DGtal-team/DGtal/pull/1081))
-
 
  - New possibility to move the light source direction using the mouse move
    in Viewer3D (with the key SHIFT+CTRL (SHIFT+CMD on mac)). The light source
@@ -122,7 +141,7 @@
    Coeurjolly,
    [#1078](https://github.com/DGtal-team/DGtal/pull/1078))
 
-- *IO*
+- *IO Package*
  - Fix viewer tests including qt4 headers even with configuring WITH_QT5=ON.
    (Pablo Hernandez-Cerdan, [#1100](https://github.com/DGtal-team/DGtal/pull/1100))
 
