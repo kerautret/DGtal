@@ -2,9 +2,9 @@ version: 0.9beta.{build}
 
 environment:
   matrix:
-  - VS_GEN: Visual Studio 14 2015
-    CONFIG: RelWithDebInfo
-    B_NAME: Win32
+#  - VS_GEN: Visual Studio 14 2015
+#    CONFIG: RelWithDebInfo
+#    B_NAME: Win32
   - VS_GEN: Visual Studio 14 2015 Win64
     CONFIG: Release
     B_NAME: Win64
