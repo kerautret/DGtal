@@ -9,6 +9,7 @@ if (WIN32)
 endif (WIN32)
 if (APPLE)
   add_definitions(-DAPPLE)
+  set(CMAKE_MACOSX_RPATH ON)
 endif (APPLE)
 
 #------------------------------------------------------------------------------
