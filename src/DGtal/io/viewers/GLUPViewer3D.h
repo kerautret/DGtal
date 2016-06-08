@@ -83,7 +83,7 @@ public:
       myIndex = 30;
       // Define the 3d region that we want to display
       // (xmin, ymin, zmin, xmax, ymax, zmax)
-      glup_viewer_set_region_of_interest(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+      glup_viewer_set_region_of_interest(0.0f, 0.0f, 0.0f, 100.0f, 100.0f, 100.0f);
         
   }
   virtual void draw_scene();

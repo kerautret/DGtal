@@ -100,20 +100,26 @@ DGtal::GLUPViewer3D<Space, KSpace>::draw_scene() {
 
   glupBegin(GLUP_HEXAHEDRA);
   glupDisable(GLUP_VERTEX_COLORS);
+  glupEnable(GLUP_LIGHTING);
+   glupSetColor3f(GLUP_FRONT_COLOR, 1.0f, 1.0f, 0.0f);
+   glupSetColor3f(GLUP_BACK_COLOR, 1.0f, 0.0f, 1.0f);
 
   for (auto &mapElem: GLUPViewer3D<Space, KSpace>::myCubesMap)
     {
       for (auto   &cube: mapElem.second)
         {
-          glupVertex3f ( 0-0.5, 0+0.5, 0+0.5 );
-          glupVertex3f ( 0-0.5, 0-0.5, 0+0.5 );
-          glupVertex3f ( 0+0.5, 0-0.5, 0+0.5 );
-          glupVertex3f ( 0+0.5, 0+0.5, 0+0.5 );
+          glupVertex3f ( cube.center[0]-0.5, cube.center[1]-0.5, cube.center[2]-0.5 );
+          glupVertex3f ( cube.center[0]-0.5, cube.center[1]+0.5, cube.center[2]-0.5 );
+          glupVertex3f ( cube.center[0]+0.5, cube.center[1]-0.5, cube.center[2]-0.5 );
+          glupVertex3f ( cube.center[0]+0.5, cube.center[1]+0.5, cube.center[2]-0.5 );
 
-          glupVertex3f ( 0-0.5, 0+0.5, 0-0.5 );
-          glupVertex3f ( 0+0.5, 0+0.5, 0-0.5 );
-          glupVertex3f ( 0+0.5, 0-0.5, 0-0.5 );
-          glupVertex3f ( 0-0.5, 0-0.5, 0-0.5 );
+          glupVertex3f ( cube.center[0]-0.5, cube.center[1]-0.5, cube.center[2]+0.5 );
+          glupVertex3f ( cube.center[0]-0.5, cube.center[1]+0.5, cube.center[2]+0.5 );
+          glupVertex3f ( cube.center[0]+0.5, cube.center[1]-0.5, cube.center[2]+0.5 );
+          glupVertex3f ( cube.center[0]+0.5, cube.center[1]+0.5, cube.center[2]+0.5 );
+
+
+
         
         }
     }
@@ -131,7 +137,7 @@ DGtal::GLUPViewer3D<Space, KSpace>::operator<<(const typename GLUPViewer3D<Space
 {
 
   DGtal::trace.info() << "key send.." << GLUPViewer3D<Space, KSpace>::myCubesMap.size() << std::endl;
-  //  draw_scene();
+  //draw_scene();
   //  GLUPViewer3D::glupCreateListCubesMaps(GLUPViewer3D<Space, KSpace>::myCubesMap);
   // switch (key)
   //   {
