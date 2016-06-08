@@ -1,0 +1,190 @@
+/**
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation, either version 3 of the
+ *  License, or  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ **/
+
+/**
+ * @file GLUPViewer3D.ih
+ * @author Bertrand Kerautret (\c kerautre@loria.fr )
+ * LORIA (CNRS, UMR 7503), University of Lorraine, France
+ *
+ * @date 2016/06/08
+ *
+ * Implementation of inline methods defined in GLUPViewer3D.h
+ *
+ * This file is part of the DGtal library.
+ */
+
+///////////////////////////////////////////////////////////////////////////////
+// IMPLEMENTATION of inline methods.
+///////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////
+#include <cstdlib>
+#include "DGtal/io/CDrawableWithDisplay3D.h"
+#include "DGtal/io/viewers/CDrawableWithGLUPViewer3D.h"
+#include "DGtal/io/viewers/GLUPViewer3DFactory.h"
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Implementation of inline methods                                          //
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Implementation of inline functions and external operators                 //
+
+
+
+
+template < typename Space ,typename KSpace >
+inline void
+DGtal::GLUPViewer3D<Space, KSpace>::draw_vertex_sphere(GEO::index_t i, GEO::index_t j) {
+  double theta = double(i) * 2.0 * M_PI / double(myIndex-1);
+  double phi = -M_PI/2.0 + double(j) * M_PI / double(myIndex-1);
+  
+  double x = (cos(theta)*cos(phi) + 1.0)/2.0;
+  double y = (sin(theta)*cos(phi) + 1.0)/2.0;
+  double z = (sin(phi) + 1.0) / 2.0;
+  
+  glupColor3d(x,y,z);
+  glupTexCoord3d(x,y,z);                
+  glupVertex3d(x,y,z);
+
+}
+
+
+
+template< typename Space, typename KSpace>
+void
+DGtal::GLUPViewer3D<Space, KSpace>::glupCreateListCubesMaps(const typename DGtal::Display3D<Space, KSpace>::CubesMap &aCubeMap){
+
+}
+
+
+
+
+template < typename Space ,typename KSpace >
+inline void
+DGtal::GLUPViewer3D<Space, KSpace>::updateList ( bool needToUpdateBoundingBox)
+{
+  std::cout << "in update list" << std::endl; 
+
+}
+
+template < typename Space ,typename KSpace >
+inline
+DGtal::GLUPViewer3D<Space, KSpace>::~GLUPViewer3D()
+{
+}
+
+
+template < typename Space ,typename KSpace >
+inline
+void
+DGtal::GLUPViewer3D<Space, KSpace>::draw_scene() {
+
+  glupBegin(GLUP_HEXAHEDRA);
+  glupDisable(GLUP_VERTEX_COLORS);
+
+  for (auto &mapElem: GLUPViewer3D<Space, KSpace>::myCubesMap)
+    {
+      for (auto   &cube: mapElem.second)
+        {
+          glupVertex3f ( 0-0.5, 0+0.5, 0+0.5 );
+          glupVertex3f ( 0-0.5, 0-0.5, 0+0.5 );
+          glupVertex3f ( 0+0.5, 0-0.5, 0+0.5 );
+          glupVertex3f ( 0+0.5, 0+0.5, 0+0.5 );
+
+          glupVertex3f ( 0-0.5, 0+0.5, 0-0.5 );
+          glupVertex3f ( 0+0.5, 0+0.5, 0-0.5 );
+          glupVertex3f ( 0+0.5, 0-0.5, 0-0.5 );
+          glupVertex3f ( 0-0.5, 0-0.5, 0-0.5 );
+        
+        }
+    }
+  glupEnd();              
+            
+}
+
+
+
+
+template <typename Space, typename KSpace>
+inline
+DGtal::GLUPViewer3D<Space, KSpace> &
+DGtal::GLUPViewer3D<Space, KSpace>::operator<<(const typename GLUPViewer3D<Space, KSpace>::StreamKey & key)
+{
+
+  DGtal::trace.info() << "key send.." << GLUPViewer3D<Space, KSpace>::myCubesMap.size() << std::endl;
+  //  draw_scene();
+  //  GLUPViewer3D::glupCreateListCubesMaps(GLUPViewer3D<Space, KSpace>::myCubesMap);
+  // switch (key)
+  //   {
+  //   case Viewer3D<Space, KSpace>::updateDisplay:
+  //     Viewer3D<Space, KSpace>::updateList();
+  //     break;
+
+  //   case Viewer3D<Space, KSpace>::addNewList:
+  //     Viewer3D<Space, KSpace>::createNewCubeList();
+  //     break;
+
+  //   case Viewer3D<Space, KSpace>::shiftSurfelVisu:
+  //     Viewer3D<Space, KSpace>::myCurrentfShiftVisuPrisms+=0.3;
+  //     break;
+  //   }
+  return *this;
+}
+
+
+
+template <typename Space, typename KSpace>
+template <typename TDrawableWithGLUPViewer3D>
+inline
+DGtal::GLUPViewer3D<Space, KSpace> &
+DGtal::GLUPViewer3D<Space, KSpace>::operator<<( const TDrawableWithGLUPViewer3D & object )
+{
+   BOOST_CONCEPT_ASSERT((CDrawableWithGLUPViewer3D< TDrawableWithGLUPViewer3D, Space, KSpace >));
+
+  DGtal::GLUPViewer3DFactory<Space,KSpace>::draw(*this, object);
+  return *this;
+}
+
+
+
+
+
+/**
+ * Overloads 'operator<<' for displaying objects of class 'GLUPViewer3D'.
+ * @param out the output stream where the object is written.
+ * @param object the object of class 'GLUPViewer3D' to write.
+ * @return the output stream after the writing.
+ */
+template < typename Space, typename KSpace>
+inline
+std::ostream&
+DGtal::operator<< ( std::ostream & out,
+                    const GLUPViewer3D<Space, KSpace> & object )
+{
+    object.selfDisplay ( out );
+    return out;
+}
+
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+

@@ -130,7 +130,7 @@ namespace DGtal
   extern Trace trace;
 
   class Board2D;
-
+  
   template < class Space, class KSpace>  class Display3D;
 
 
@@ -140,7 +140,7 @@ namespace DGtal
 #if defined( WITH_VISU3D_QGLVIEWER )
   template < class Space, class KSpace> class Viewer3D;
 #endif
-
+template < class Space, class KSpace> class GLUPViewer3D;
 
 #if defined( WITH_CAIRO )
   /**
@@ -175,6 +175,16 @@ void setStyle( Board3DTo2D< S, KS> &  ) const {}
   };
 #endif
 
+  struct DrawableWithGLUPViewer3D {
+    /**
+     * Operation to override. Does nothing by default.
+     */
+    template < typename S, typename KS>
+    void setStyle( GLUPViewer3D< S, KS> &  ) const {}
+    virtual ~DrawableWithGLUPViewer3D() {}
+  };
+
+  
   /**
    * Interface that specifies that an object can draw itself on a
    *  3DDisplay
