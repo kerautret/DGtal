@@ -392,6 +392,10 @@ public:
 
 
 
+  
+
+  
+
   //-------------------- Primitive services -----------------------------
 
 
@@ -454,6 +458,15 @@ public:
 
   PointD getNormal() const;
 
+  /**
+   * @return the a value of the normal vector (a,b).
+   */
+  double a() const; 
+
+  /**
+   * @return the b value of the normal vector (a,b).
+   */
+  double b() const; 
 
   /**
    * @return the thickness of the current segment.
@@ -473,12 +486,20 @@ public:
   double getNu() const;
 
 
-   /**
+  /**
    * @return the segment length defined from the bouding box (@see getBoundingBox).
    **/
   double getSegmentLength() const;
 
 
+  /**
+   * Checks whether a point is in the bounding box the AlphaThickSegment.
+   * @param[in] aPoint the point to be checked.
+   * @return 'true' if yes, 'false' otherwise.
+   **/
+  bool isInDSS(const InputPoint& aPoint) const;
+  
+  
   /**
    * @return 'true' if the points of the segment computer are stored in the main container.
    **/

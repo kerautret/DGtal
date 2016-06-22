@@ -611,6 +611,21 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getSegmentLength
   return (pt2-pt1).norm();
 }
 
+template < typename TInputPoint, typename TConstIterator>
+inline
+bool 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::isInDSS(const InputPoint& aPoint) const
+{
+  PointD pt1, pt2, pt3, pt4;
+  getBoundingBox(pt1, pt2, pt3, pt4);
+  PointD u1 = pt2-pt1;
+  PointD u2 = pt3-pt2;
+  PointD u3 = pt4-pt3;
+  PointD u4 = pt1-pt4;
+  return u1.dot(aPoint-pt1) >=0 && u2.dot(aPoint-pt2) >=0  && 
+         u3.dot(aPoint-pt3) >=0 && u4.dot(aPoint-pt4);
+  
+}
 
 
 template < typename TInputPoint, typename TConstIterator>
@@ -620,14 +635,17 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
                                                                                            PointD &N, 
                                                                                            double &nu) const
 {
-  PointD dirSeg =  myState.edgeQh - myState.edgePh; 
-  N[0] = -dirSeg[1];
-  N[1] = dirSeg[0];
+  PointD pt1, pt2, pt3, pt4;
+  getBoundingBox(pt1, pt2, pt3, pt4);
+  
+  //PointD dirSeg =  myState.edgeQh - myState.edgePh; 
+  N = pt3-pt2;//-dirSeg[1];
+  //N = dirSeg[0];
   mu = (N[0]*myState.edgePh[0]+N[1]*myState.edgePh[1]);
   nu = N[0]*myState.vertexSh[0]+N[1]*myState.vertexSh[1] - mu;
 }
 
- 
+
 template < typename TInputPoint, typename TConstIterator>
 inline
 double 
@@ -645,7 +663,24 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNormal() cons
   return primitive().normal();
 }
 
- 
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::a() const 
+{
+  return primitive().normal().getNormalized()[0];
+}
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::b() const 
+{
+  return primitive().normal().getNormalized()[1];
+}
+
+
 template < typename TInputPoint, typename TConstIterator>
 inline
 double 
