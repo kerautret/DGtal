@@ -669,7 +669,7 @@ inline
 double 
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::a() const 
 {
-  return primitive().normal().getNormalized()[0];
+  return primitive().normal()[0];
 }
 
 template < typename TInputPoint, typename TConstIterator>
@@ -677,7 +677,7 @@ inline
 double 
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::b() const 
 {
-  return primitive().normal().getNormalized()[1];
+  return primitive().normal()[1];
 }
 
 
