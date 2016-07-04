@@ -624,6 +624,12 @@ private:
    * the non normalized direction of the normal vector of the segment
    **/
   mutable PointD  myNormalDirection;
+
+  mutable PointD myLowerSupportPoint;
+
+  mutable PointD myUpperSupportPoint;
+
+
   
   /**
    * To adjust the precision of the thickness estimation used in the comparison during the segment extension.

@@ -87,9 +87,10 @@ AlphaThickSegmentComputer( const AlphaThickSegmentComputer & other ): myBegin(ot
                                                                       myPreviousState(other.myPreviousState), 
                                                                       myIsStoringPoints(other.myIsStoringPoints),
                                                                       myNbPointsAddedFromIterators(other.myNbPointsAddedFromIterators),
-                                                                      myNormalDirection(other.myNormalDirection)
+                                                                      myNormalDirection(other.myNormalDirection),
+                                                                      myLowerSupportPoint(other.myLowerSupportPoint),
+                                                                      myUpperSupportPoint(other.myUpperSupportPoint)
 
-   
 { 
 }
 
@@ -112,6 +113,8 @@ operator= ( const AlphaThickSegmentComputer & other )
       myBegin = other.myBegin;
       myEnd = other.myEnd;
       myNormalDirection=other.myNormalDirection;
+      myLowerSupportPoint = other.myLowerSupportPoint;
+      myUpperSupportPoint = other.myUpperSupportPoint;
     }
   return *this;
 }
@@ -643,12 +646,15 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
   PointD dirSeg =  myState.edgeQh - myState.edgePh; 
   N[0] = -dirSeg[1];
   N[1] = dirSeg[0];
-  
+  myLowerSupportPoint = myState.edgePh;
+  myUpperSupportPoint = myState.vertexSh;
   PointD nOriented = pt3-pt2;
   if(nOriented.dot(N)<0)
     {
       N[0] = -N[0];
       N[1] = -N[1];      
+      myLowerSupportPoint = myState.vertexSh ;
+      myUpperSupportPoint = myState.edgePh;
     }
   myNormalDirection[0] =  N[0];
   myNormalDirection[1] = N[1];
@@ -701,7 +707,10 @@ inline
 double 
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getMu() const 
 {
-  return primitive().mu();
+  myLowerSupportPoint = myState.edgePh;
+  myUpperSupportPoint = myState.vertexSh;
+  return (myNormalDirection[0]*myLowerSupportPoint[0]+myNormalDirection[1]*myLowerSupportPoint[1]);
+  //  return primitive().mu();
 }
 
 
@@ -710,7 +719,9 @@ inline
 double 
   DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNu() const 
 {
-  return primitive().nu();
+  double mu = getMu();
+  return myNormalDirection[0]*myUpperSupportPoint[0]+myNormalDirection[1]*myUpperSupportPoint[1] - mu;  
+  //return primitive().nu();
 }
 
    
