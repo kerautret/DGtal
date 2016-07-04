@@ -86,7 +86,9 @@ AlphaThickSegmentComputer( const AlphaThickSegmentComputer & other ): myBegin(ot
                                                                       myState(other.myState),
                                                                       myPreviousState(other.myPreviousState), 
                                                                       myIsStoringPoints(other.myIsStoringPoints),
-                                                                      myNbPointsAddedFromIterators(other.myNbPointsAddedFromIterators) 
+                                                                      myNbPointsAddedFromIterators(other.myNbPointsAddedFromIterators),
+                                                                      myNormalDirection(other.myNormalDirection)
+
    
 { 
 }
@@ -109,6 +111,7 @@ operator= ( const AlphaThickSegmentComputer & other )
       myNbPointsAddedFromIterators = other.myNbPointsAddedFromIterators;
       myBegin = other.myBegin;
       myEnd = other.myEnd;
+      myNormalDirection=other.myNormalDirection;
     }
   return *this;
 }
@@ -637,10 +640,19 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
 {
   PointD pt1, pt2, pt3, pt4;
   getBoundingBox(pt1, pt2, pt3, pt4);
+  PointD dirSeg =  myState.edgeQh - myState.edgePh; 
+  N[0] = -dirSeg[1];
+  N[1] = dirSeg[0];
   
-  //PointD dirSeg =  myState.edgeQh - myState.edgePh; 
-  N = pt3-pt2;//-dirSeg[1];
-  //N = dirSeg[0];
+  PointD nOriented = pt3-pt2;
+  if(nOriented.dot(N)<0)
+    {
+      N[0] = -N[0];
+      N[1] = -N[1];      
+    }
+  myNormalDirection[0] =  N[0];
+  myNormalDirection[1] = N[1];
+  
   mu = (N[0]*myState.edgePh[0]+N[1]*myState.edgePh[1]);
   nu = N[0]*myState.vertexSh[0]+N[1]*myState.vertexSh[1] - mu;
 }
@@ -666,18 +678,21 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNormal() cons
 
 template < typename TInputPoint, typename TConstIterator>
 inline
-double 
+double
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::a() const 
+
 {
-  return primitive().normal()[0];
+  primitive();
+  return myNormalDirection[0];
 }
 
 template < typename TInputPoint, typename TConstIterator>
 inline
-double 
+double
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::b() const 
 {
-  return primitive().normal()[1];
+  primitive();
+  return -myNormalDirection[1];
 }
 
 

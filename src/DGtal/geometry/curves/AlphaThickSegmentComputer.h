@@ -472,7 +472,7 @@ public:
    * @return the thickness of the current segment.
    **/
   double getThickness() const;
-
+  
 
   /**
    * @return the mu parameter of the current segment (given from the segment ParalellStrip primitive).
@@ -619,6 +619,12 @@ private:
    */
   double myMaximalThickness;
 
+
+  /**
+   * the non normalized direction of the normal vector of the segment
+   **/
+  mutable PointD  myNormalDirection;
+  
   /**
    * To adjust the precision of the thickness estimation used in the comparison during the segment extension.
    */
@@ -649,7 +655,7 @@ private:
   unsigned int myNbPointsAddedFromIterators;
 
 
-
+  
 
     // ------------------------- Hidden services ------------------------------
 protected:
