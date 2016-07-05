@@ -46,6 +46,7 @@
 // Inclusions
 #include <iostream>
 #include "DGtal/base/Common.h"
+#include <DGtal/arithmetic/IntegerComputer.h>
 #include "DGtal/base/ReverseIterator.h"
 #include "DGtal/kernel/SpaceND.h"
 #include "DGtal/geometry/surfaces/ParallelStrip.h"
@@ -180,6 +181,33 @@ private:
     double actualThickness;
   };
 
+
+
+  struct ThickDSS{
+    ThickDSS(){
+    }
+    ThickDSS(const ThickDSS & other): myLowerLeaningPoint(other.myLowerLeaningPoint),
+                                      myUpperLeaningPoint(other.myUpperLeaningPoint),
+                                      myMu(other.myMu),
+                                      myOmega(other.myOmega),
+                                      myA(other.myA),
+                                      myB(other.myB)
+    {}
+    void updateMuOmega()
+    {
+      IntegerComputer<int> icomp;
+      int d = icomp.gcd(myA,myB);
+      myA /=d; myB /=d; 
+      myMu = (myA*myLowerLeaningPoint[0]-myB*myLowerLeaningPoint[1]);
+      myOmega = (myA*myUpperLeaningPoint[0]-myB*myUpperLeaningPoint[1])-myMu;
+    }
+    
+    DGtal::PointVector<2, int> myLowerLeaningPoint;
+    DGtal::PointVector<2, int> myUpperLeaningPoint;
+    int myMu;
+    int myOmega;
+    int myA, myB;
+  };
 
   // ----------------------- Standard services ------------------------------
 public:
@@ -461,12 +489,17 @@ public:
   /**
    * @return the a value of the normal vector (a,b).
    */
-  double a() const; 
+  double dssA() const; 
 
   /**
    * @return the b value of the normal vector (a,b).
    */
-  double b() const; 
+  double dssB() const; 
+
+  double dssMu() const;
+
+  double dssOmega() const;
+
 
   /**
    * @return the thickness of the current segment.
@@ -619,19 +652,8 @@ private:
    */
   double myMaximalThickness;
 
-
-  /**
-   * the non normalized direction of the normal vector of the segment
-   **/
-  mutable PointD  myNormalDirection;
-
-  mutable PointD myLowerSupportPoint;
-
-  mutable PointD myUpperSupportPoint;
-
-  mutable double myMu;
-  mutable double myNu;
   
+  mutable ThickDSS myThickDSS; 
   
   /**
    * To adjust the precision of the thickness estimation used in the comparison during the segment extension.
