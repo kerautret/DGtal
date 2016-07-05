@@ -629,7 +629,9 @@ private:
 
   mutable PointD myUpperSupportPoint;
 
-
+  mutable double myMu;
+  mutable double myNu;
+  
   
   /**
    * To adjust the precision of the thickness estimation used in the comparison during the segment extension.

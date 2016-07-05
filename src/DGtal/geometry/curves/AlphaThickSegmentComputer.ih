@@ -646,21 +646,28 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
   PointD dirSeg =  myState.edgeQh - myState.edgePh; 
   N[0] = -dirSeg[1];
   N[1] = dirSeg[0];
-  myLowerSupportPoint = myState.edgePh;
-  myUpperSupportPoint = myState.vertexSh;
   PointD nOriented = pt3-pt2;
   if(nOriented.dot(N)<0)
     {
       N[0] = -N[0];
       N[1] = -N[1];      
-      myLowerSupportPoint = myState.vertexSh ;
-      myUpperSupportPoint = myState.edgePh;
     }
   myNormalDirection[0] =  N[0];
   myNormalDirection[1] = N[1];
+
+  myLowerSupportPoint = myState.edgePh;
+  myUpperSupportPoint = myState.vertexSh;
+  if(N[0]*myLowerSupportPoint[0]+N[1]*myLowerSupportPoint[1] >
+     N[0]*myUpperSupportPoint[0]+N[1]*myUpperSupportPoint[1])
+    {
+      myLowerSupportPoint = myState.vertexSh;
+      myUpperSupportPoint = myState.edgePh;     
+    }
   
-  mu = (N[0]*myState.edgePh[0]+N[1]*myState.edgePh[1]);
-  nu = N[0]*myState.vertexSh[0]+N[1]*myState.vertexSh[1] - mu;
+  mu = (N[0]*myLowerSupportPoint[0]+N[1]*myLowerSupportPoint[1]);
+  nu = N[0]*myUpperSupportPoint[0]+N[1]*myUpperSupportPoint[1] - mu;
+  myMu = mu;
+  myNu = nu;
 }
 
 
@@ -707,9 +714,10 @@ inline
 double 
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getMu() const 
 {
-  myLowerSupportPoint = myState.edgePh;
-  myUpperSupportPoint = myState.vertexSh;
-  return (myNormalDirection[0]*myLowerSupportPoint[0]+myNormalDirection[1]*myLowerSupportPoint[1]);
+  return myMu;
+  // myLowerSupportPoint = myState.edgePh;
+  //myUpperSupportPoint = myState.vertexSh;
+  //return (myNormalDirection[0]*myLowerSupportPoint[0]+myNormalDirection[1]*myLowerSupportPoint[1]);
   //  return primitive().mu();
 }
 
@@ -719,8 +727,9 @@ inline
 double 
   DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNu() const 
 {
-  double mu = getMu();
-  return myNormalDirection[0]*myUpperSupportPoint[0]+myNormalDirection[1]*myUpperSupportPoint[1] - mu;  
+  return myNu;
+  //double mu = getMu();
+  //return myNormalDirection[0]*myUpperSupportPoint[0]+myNormalDirection[1]*myUpperSupportPoint[1] - mu;  
   //return primitive().nu();
 }
 
