@@ -186,8 +186,10 @@ private:
   struct ThickDSS{
     ThickDSS(){
     }
-    ThickDSS(const ThickDSS & other): myLowerLeaningPoint(other.myLowerLeaningPoint),
-                                      myUpperLeaningPoint(other.myUpperLeaningPoint),
+    ThickDSS(const ThickDSS & other): myLowerLeaningPoint1(other.myLowerLeaningPoint1),
+                                      myUpperLeaningPoint1(other.myUpperLeaningPoint1),
+                                      myLowerLeaningPoint2(other.myLowerLeaningPoint2),
+                                      myUpperLeaningPoint2(other.myUpperLeaningPoint2),
                                       myMu(other.myMu),
                                       myOmega(other.myOmega),
                                       myA(other.myA),
@@ -198,12 +200,15 @@ private:
       IntegerComputer<int> icomp;
       int d = icomp.gcd(myA,myB);
       myA /=d; myB /=d; 
-      myMu = (myA*myLowerLeaningPoint[0]-myB*myLowerLeaningPoint[1]);
-      myOmega = (myA*myUpperLeaningPoint[0]-myB*myUpperLeaningPoint[1])-myMu;
-    }
+      myMu = (myA*myLowerLeaningPoint1[0]-myB*myLowerLeaningPoint1[1]);
+      myOmega = (myA*myUpperLeaningPoint1[0]-myB*myUpperLeaningPoint1[1])-myMu;
+    }    
+
+    DGtal::PointVector<2, int> myLowerLeaningPoint1;
+    DGtal::PointVector<2, int> myLowerLeaningPoint2;
+    DGtal::PointVector<2, int> myUpperLeaningPoint1;
+    DGtal::PointVector<2, int> myUpperLeaningPoint2;
     
-    DGtal::PointVector<2, int> myLowerLeaningPoint;
-    DGtal::PointVector<2, int> myUpperLeaningPoint;
     int myMu;
     int myOmega;
     int myA, myB;
@@ -500,7 +505,15 @@ public:
 
   double dssOmega() const;
 
+  
+  PointD dssLf() const;
+  PointD dssLl() const;
+  PointD dssUf() const;
+  PointD dssUl() const;
+  
 
+
+  
   /**
    * @return the thickness of the current segment.
    **/
