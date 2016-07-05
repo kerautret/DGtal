@@ -198,7 +198,7 @@ private:
     void updateMuOmega()
     {
       IntegerComputer<int> icomp;
-      int d = icomp.gcd(myA,myB);
+      int d = std::abs(icomp.gcd(myA,myB));
       myA /=d; myB /=d; 
       myMu = (myA*myLowerLeaningPoint1[0]-myB*myLowerLeaningPoint1[1]);
       myOmega = (myA*myUpperLeaningPoint1[0]-myB*myUpperLeaningPoint1[1])-myMu;

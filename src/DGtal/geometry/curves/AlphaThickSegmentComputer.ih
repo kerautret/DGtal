@@ -650,17 +650,27 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
   PointD nOriented = pt2-pt3;
   if(nOriented.dot(N)<0)
     {
-      N = -N;      
-      myThickDSS.myLowerLeaningPoint1 = myState.vertexSh;
-      myThickDSS.myLowerLeaningPoint2 = myState.vertexSh;
-      myThickDSS.myUpperLeaningPoint1 = myState.edgePh;
-      myThickDSS.myUpperLeaningPoint2 = myState.edgeQh;
+      N = -N;
+      myThickDSS.myLowerLeaningPoint1 = myState.edgeQh;
+      myThickDSS.myLowerLeaningPoint2 = myState.edgePh;
+      myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
+      myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;
+  
     }
   
   myThickDSS.myA =  N[0];
   myThickDSS.myB = -N[1];
-
-  
+  // myLowerLeaningPoint1 and myLowerLeaningPoint2 should be aligned with pt1 and pt2:
+  if((myThickDSS.myLowerLeaningPoint2-myThickDSS.myLowerLeaningPoint1).dot(pt1-pt2)>0)
+    {
+      PointD saveLp1 = myThickDSS.myLowerLeaningPoint1;
+      PointD saveLp2 = myThickDSS.myLowerLeaningPoint2;
+      myThickDSS.myLowerLeaningPoint1 = myThickDSS.myUpperLeaningPoint1;
+      myThickDSS.myLowerLeaningPoint2 = myThickDSS.myUpperLeaningPoint2;
+      myThickDSS.myUpperLeaningPoint1 = saveLp1;
+      myThickDSS.myUpperLeaningPoint2 = saveLp2;
+      
+    }
   mu = (N[0]*myThickDSS.myLowerLeaningPoint1[0]+N[1]*myThickDSS.myLowerLeaningPoint1[1]);
   nu = N[0]*myThickDSS.myUpperLeaningPoint1[0]+N[1]*myThickDSS.myUpperLeaningPoint1[1] - mu;
   myThickDSS.updateMuOmega();
@@ -721,7 +731,8 @@ inline
 double
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssOmega() const 
 {
-  primitive();
+  //primitive();
+  myThickDSS.updateMuOmega();
   return myThickDSS.myOmega;
   //  return -myNormalDirection[1];
 }
