@@ -212,7 +212,7 @@ private:
     DGtal::PointVector<2, int> myLowerLeaningPoint2;
     DGtal::PointVector<2, int> myUpperLeaningPoint1;
     DGtal::PointVector<2, int> myUpperLeaningPoint2;
-
+    
     DGtal::PointVector<2, int> myLeaningPoint1;
     DGtal::PointVector<2, int> myLeaningPoint2;
 
@@ -501,16 +501,16 @@ public:
   /**
    * @return the a value of the normal vector (a,b).
    */
-  double dssA() const; 
+  double a() const; 
 
   /**
    * @return the b value of the normal vector (a,b).
    */
-  double dssB() const; 
+  double b() const; 
 
-  double dssMu() const;
+  double mu() const;
 
-  double dssOmega() const;
+  double omega() const;
 
   
   PointD dssLf() const;

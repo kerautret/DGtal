@@ -692,7 +692,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNormal() cons
 template < typename TInputPoint, typename TConstIterator>
 inline
 double
-DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssA() const 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::a() const 
 
 {
   primitive();
@@ -703,7 +703,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssA() const
 template < typename TInputPoint, typename TConstIterator>
 inline
 double
-DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssB() const 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::b() const 
 {
   primitive();
   return myThickDSS.myB;
@@ -713,7 +713,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssB() const
 template < typename TInputPoint, typename TConstIterator>
 inline
 double
-DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssMu() const 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::mu() const 
 {
   primitive();
   return myThickDSS.myMu;
@@ -723,7 +723,7 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssMu() const
 template < typename TInputPoint, typename TConstIterator>
 inline
 double
-DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssOmega() const 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::omega() const 
 {
   //primitive();
   myThickDSS.updateMuOmega();
