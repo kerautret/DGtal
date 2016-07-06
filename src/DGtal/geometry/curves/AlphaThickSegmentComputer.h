@@ -190,6 +190,8 @@ private:
                                       myUpperLeaningPoint1(other.myUpperLeaningPoint1),
                                       myLowerLeaningPoint2(other.myLowerLeaningPoint2),
                                       myUpperLeaningPoint2(other.myUpperLeaningPoint2),
+                                      myLeaningPoint1(other.myLeaningPoint1),
+                                      myLeaningPoint2(other.myLeaningPoint2),
                                       myMu(other.myMu),
                                       myOmega(other.myOmega),
                                       myA(other.myA),
@@ -199,7 +201,9 @@ private:
     {
       IntegerComputer<int> icomp;
       int d = std::abs(icomp.gcd(myA,myB));
-      myA /=d; myB /=d; 
+      if(d != 0){
+        myA /=d; myB /=d;
+      }
       myMu = (myA*myLowerLeaningPoint1[0]-myB*myLowerLeaningPoint1[1]);
       myOmega = (myA*myUpperLeaningPoint1[0]-myB*myUpperLeaningPoint1[1])-myMu;
     }    
@@ -208,7 +212,10 @@ private:
     DGtal::PointVector<2, int> myLowerLeaningPoint2;
     DGtal::PointVector<2, int> myUpperLeaningPoint1;
     DGtal::PointVector<2, int> myUpperLeaningPoint2;
-    
+
+    DGtal::PointVector<2, int> myLeaningPoint1;
+    DGtal::PointVector<2, int> myLeaningPoint2;
+
     int myMu;
     int myOmega;
     int myA, myB;

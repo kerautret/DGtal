@@ -639,40 +639,34 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
 {
   PointD pt1, pt2, pt3, pt4;
   getBoundingBox(pt1, pt2, pt3, pt4);
+  PointD segmentLowerSupport = (pt1-pt2).getNormalized();
+  PointD segmentUpperSupport = (pt4-pt3).getNormalized();
+  bool isPQLower = true;
+  if(myState.edgePh!=pt2 && myState.edgePh!=pt3)
+    {
+      PointD u = (myState.edgePh-pt2).getNormalized();
+      PointD v = (myState.edgePh-pt3).getNormalized();
+      isPQLower = segmentLowerSupport.dot(u) > segmentUpperSupport.dot(v);
+    }
+  if(!isPQLower)
+    {
+      myThickDSS.myLowerLeaningPoint1 = myState.vertexSh;
+      myThickDSS.myLowerLeaningPoint2 = myState.vertexSh;
+      myThickDSS.myUpperLeaningPoint1 = myState.edgePh;
+      myThickDSS.myUpperLeaningPoint2 = myState.edgeQh;      
+    }
+  else
+    {
+      myThickDSS.myLowerLeaningPoint1 = myState.edgePh;
+      myThickDSS.myLowerLeaningPoint2 = myState.edgeQh;
+      myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
+      myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;      
+    }
   PointD dirSeg =  myState.edgeQh - myState.edgePh; 
   N[0] = dirSeg[1];
   N[1] = -dirSeg[0];
-  myThickDSS.myLowerLeaningPoint1 = myState.edgePh;
-  myThickDSS.myLowerLeaningPoint2 = myState.edgeQh;
-  myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
-  myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;
-  
-  PointD nOriented = pt2-pt3;
-  if(nOriented.dot(N)<0)
-    {
-      N = -N;
-      myThickDSS.myLowerLeaningPoint1 = myState.edgeQh;
-      myThickDSS.myLowerLeaningPoint2 = myState.edgePh;
-      myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
-      myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;
-  
-    }
-  
   myThickDSS.myA =  N[0];
   myThickDSS.myB = -N[1];
-  // myLowerLeaningPoint1 and myLowerLeaningPoint2 should be aligned with pt1 and pt2:
-  if((myThickDSS.myLowerLeaningPoint2-myThickDSS.myLowerLeaningPoint1).dot(pt1-pt2)>0)
-    {
-      PointD saveLp1 = myThickDSS.myLowerLeaningPoint1;
-      PointD saveLp2 = myThickDSS.myLowerLeaningPoint2;
-      myThickDSS.myLowerLeaningPoint1 = myThickDSS.myUpperLeaningPoint1;
-      myThickDSS.myLowerLeaningPoint2 = myThickDSS.myUpperLeaningPoint2;
-      myThickDSS.myUpperLeaningPoint1 = saveLp1;
-      myThickDSS.myUpperLeaningPoint2 = saveLp2;
-      
-    }
-  mu = (N[0]*myThickDSS.myLowerLeaningPoint1[0]+N[1]*myThickDSS.myLowerLeaningPoint1[1]);
-  nu = N[0]*myThickDSS.myUpperLeaningPoint1[0]+N[1]*myThickDSS.myUpperLeaningPoint1[1] - mu;
   myThickDSS.updateMuOmega();
 }
 
