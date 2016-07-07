@@ -649,9 +649,9 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
     {
       PointD u = (myState.edgePh-pt2).getNormalized();
       PointD v = (myState.edgePh-pt3).getNormalized();
-      isPQLower = segmentLowerSupport.dot(u) > segmentUpperSupport.dot(v);
+      isPQLower = segmentLowerSupport.dot(u) >= segmentUpperSupport.dot(v);
     }
-  if(!isPQLower)
+  if(isPQLower)
     {
       myThickDSS.myLowerLeaningPoint1 = myState.vertexSh;
       myThickDSS.myLowerLeaningPoint2 = myState.vertexSh;
