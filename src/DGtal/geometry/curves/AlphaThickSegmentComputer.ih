@@ -642,6 +642,9 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
   PointD segmentLowerSupport = (pt1-pt2).getNormalized();
   PointD segmentUpperSupport = (pt4-pt3).getNormalized();
   bool isPQLower = true;
+  myThickDSS.myLeaningPoint1 =  myState.edgePh;
+  myThickDSS.myLeaningPoint2 =  myState.edgeQh;
+  
   if(myState.edgePh!=pt2 && myState.edgePh!=pt3)
     {
       PointD u = (myState.edgePh-pt2).getNormalized();
@@ -662,7 +665,22 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
       myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
       myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;      
     }
-  PointD dirSeg =  myState.edgeQh - myState.edgePh; 
+  PointD frontDir  = pt1-pt2;
+  bool isLPoint1_2Front = frontDir.dot(myThickDSS.myLeaningPoint2-myThickDSS.myLeaningPoint1)>0;
+  if(!isLPoint1_2Front)
+    {
+      //trace.info() << "hereeeeee" << std::endl;
+       PointD tmp = myThickDSS.myLowerLeaningPoint1;
+       myThickDSS.myLowerLeaningPoint1 = myThickDSS.myLowerLeaningPoint2;
+       myThickDSS.myLowerLeaningPoint2 = tmp;
+       tmp = myThickDSS.myUpperLeaningPoint1; 
+       myThickDSS.myUpperLeaningPoint1 = myThickDSS.myUpperLeaningPoint2 ;
+       myThickDSS.myUpperLeaningPoint2 = tmp;       
+       myThickDSS.myLeaningPoint1 = myState.edgeQh;
+       myThickDSS.myLeaningPoint2 = myState.edgePh;
+    }
+
+  PointD dirSeg =  myThickDSS.myLeaningPoint2 - myThickDSS.myLeaningPoint1; 
   N[0] = dirSeg[1];
   N[1] = -dirSeg[0];
   myThickDSS.myA =  N[0];
