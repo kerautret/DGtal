@@ -99,6 +99,7 @@ before_script:
 # Main rules
 ############
 script:
+  - echo "---- $BTYPE -----"
   - cmake . $BTYPE -DCMAKE_CXX_COMPILER=$CXXCOMPILER -DCMAKE_C_COMPILER=$CCOMPILER
   - echo $BUILD_DOC
   - echo $UPLOAD_DOC
