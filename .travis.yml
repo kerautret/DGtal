@@ -70,8 +70,8 @@ addons:
 
 before_install:
   - export DOWNLOAD_ROOT="$HOME/download"; if [ ! -d "$DOWNLOAD_ROOT" ]; then mkdir -p "$DOWNLOAD_ROOT"; fi
-  - export EIGEN_DOWNLOAD="$TRAVIS_BUILD_DIR/../eigen"
-  - export EIGEN_ROOT="$TRAVIS_BUILD_DIR/../eigen"        
+  - export EIGEN_ROOT="$TRAVIS_BUILD_DIR/../eigen"
+  - mkdir "$EIGEN_ROOT"
   - export SRC_DIR="`pwd`"
   - if [ $CXX == "g++" ]; then CCOMPILER="gcc-4.8"; CXXCOMPILER="g++-4.8"; fi
   - BUILD_DOC="false"
