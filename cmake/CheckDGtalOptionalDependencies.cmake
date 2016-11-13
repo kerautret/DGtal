@@ -384,15 +384,15 @@ ENDIF(WITH_OPENMP)
 # -----------------------------------------------------------------------------
 SET(EIGEN_FOUND_DGTAL 0)
 IF(WITH_EIGEN)
-  FIND_PACKAGE(Eigen3 3.3 REQUIRED)
+  FIND_PACKAGE(Eigen3 REQUIRED)
   IF(Eigen3_FOUND)
     SET(EIGEN_FOUND_DGTAL 1)
     ADD_DEFINITIONS("-DWITH_EIGEN ")
     include_directories( ${EIGEN3_INCLUDE_DIR})
     message(STATUS "Eigen3 (version ${EIGEN3_VERSION}) found.")
-  ELSE(EIGEN3_FOUND)
+  ELSE(Eigen3_FOUND)
     message(FATAL_ERROR "Eigen3 is not found or the installed version (${EIGEN3_VERSION}) is below 3.2.1. ")
-  ENDIF(EIGEN3_FOUND)
+  ENDIF(Eigen3_FOUND)
 ENDIF(WITH_EIGEN)
 
 # -----------------------------------------------------------------------------
