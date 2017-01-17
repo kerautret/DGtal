@@ -51,6 +51,7 @@ before_build:
   - cmd: cd c:\zlib-build
   - cmd: cmake -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_ -DCMAKE_INSTALL_PREFIX:PATH=c:\zlib-install c:\zlib
   - msbuild zlib.sln /m
+  - cmd: msbuild INSTALL.vcxproj
 
   - IF EXIST %QGLDIR%\libqglviewer SET CACHEOK=TRUE
   - IF %CACHEOK%==FALSE git clone --depth 1 https://github.com/kerautret/libQGLViewer.git %QGLDIR%\libqglviewer
