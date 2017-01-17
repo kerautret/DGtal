@@ -54,7 +54,8 @@ before_build:
   - 7z x zlib-dll.zip -oC:\zlib-dll
   - appveyor DownloadFile "http://www.winimage.com/zLibDll/zlib123.zip" -FileName zlib123.zip
   - 7z x zlib123.zip -oC:\zlib
-  - cmake -Wno-dev -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DWITH_QGLVIEWER:BOOL=ON -DQGLVIEWER_INCLUDE_DIR=%QGLDIR%\libQGLViewer -DQGLVIEWER_LIBRARIES=%QGLDIR%\libQGLViewer\QGLViewer\QGLViewer2.lib -DWITH_QT5:BOOL=ON -DBUILD_EXAMPLES:BOOL=ON -DBUILD_TESTING:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=FALSE   -DZLIB_LIBRARY=C:\zlib-dll\static32\zlibstat.lib -DZLIB_INCLUDE_DIR=C:\zlib -DBOOST_ROOT=C:\Libraries\boost_1_59_0  -DBoost_LIBRARIES=C:\\Libraries\\boost_1_59_0\\stage\\lib\\libboost_iostreams-vc120-mt-1_59.lib .
+  - cmake -Wno-dev -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DWITH_QGLVIEWER:BOOL=ON -DQGLVIEWER_INCLUDE_DIR=%QGLDIR%\libQGLViewer -DQGLVIEWER_LIBRARIES=%QGLDIR%\libQGLViewer\QGLViewer\QGLViewer2.lib -DWITH_QT5:BOOL=ON -DBUILD_EXAMPLES:BOOL=ON -DBUILD_TESTING:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=FALSE   -DZLIB_LIBRARY=C:\zlib-dll\static32\zlibstat.lib -DZLIB_INCLUDE_DIR=C:\zlib -DBOOST_ROOT=C:\Libraries\boost_1_60_0
+  #-DBoost_LIBRARIES=C:\Libraries\boost_1_60_0\stage\lib\libboost_iostreams-vc120-mt-1_60.lib .
   #-DBoost_LIBRARIES=C:\\Libraries\\boost_1_59_0\\stage\\lib\\libboost_iostreams-vc120-mt-1_59.lib .
   #-DBOOST_ROOT=C:\Libraries\boost .
   
