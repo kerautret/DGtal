@@ -38,12 +38,20 @@ init:
   - cmake --version
   - set PATH=%QTDIR%\bin;%PATH%
   - set CACHEOK=FALSE
-
+  - cmd: mkdir c:\zlib
+  - cmd: git clone -q --depth=1 --branch=dcmqi https://github.com/fedorov/zlib.git c:\zlib
+  - cmd: mkdir c:\zlib-install
+  - cmd: mkdir c:\zlib-build
+  - cmd: cd c:\zlib-build
+  - cmd: cmake -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_ -DCMAKE_INSTALL_PREFIX:PATH=c:\zlib-install c:\zlib
+  - msbuild zlib.sln /m
+  
 # scripts that run after cloning repository
 install:
 
 before_build:
 #install QGLViewer:
+  
   - IF EXIST %QGLDIR%\libqglviewer SET CACHEOK=TRUE
   - IF %CACHEOK%==FALSE git clone --depth 1 https://github.com/kerautret/libQGLViewer.git %QGLDIR%\libqglviewer
   - IF %CACHEOK%==FALSE cd %QGLDIR%\libqglviewer\QGLViewer
@@ -54,7 +62,12 @@ before_build:
   - 7z x zlib-dll.zip -oC:\zlib-dll
   - appveyor DownloadFile "http://www.winimage.com/zLibDll/zlib123.zip" -FileName zlib123.zip
   - 7z x zlib123.zip -oC:\zlib
-  - cmake -Wno-dev -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DWITH_QGLVIEWER:BOOL=ON -DQGLVIEWER_INCLUDE_DIR=%QGLDIR%\libQGLViewer -DQGLVIEWER_LIBRARIES=%QGLDIR%\libQGLViewer\QGLViewer\QGLViewer2.lib -DWITH_QT5:BOOL=ON -DBUILD_EXAMPLES:BOOL=ON -DBUILD_TESTING:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=FALSE   -DZLIB_LIBRARY=C:\zlib-dll\static32\zlibstat.lib -DZLIB_INCLUDE_DIR=C:\zlib -DBOOST_ROOT=C:\Libraries\boost_1_59_0  -DBOOST_LIBRARYDIR=C:\Libraries\boost_1_59_0\lib64-msvc-14.0  -DBoost_LIBRARIES=C:\Libraries\boost_1_59_0\stage\lib\libboost_zlib-vc120-mt-1_59.lib.
+  - cmake -Wno-dev -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DWITH_QGLVIEWER:BOOL=ON -DQGLVIEWER_INCLUDE_DIR=%QGLDIR%\libQGLViewer -DQGLVIEWER_LIBRARIES=%QGLDIR%\libQGLViewer\QGLViewer\QGLViewer2.lib -DWITH_QT5:BOOL=ON -DBUILD_EXAMPLES:BOOL=ON -DBUILD_TESTING:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=FALSE   -DZLIB_LIBRARY=c:\zlib-install -DZLIB_INCLUDE_DIR=C:\zlib -DBOOST_ROOT=C:\Libraries\boost .
+
+#  - cmake -Wno-dev -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DWITH_QGLVIEWER:BOOL=ON -DQGLVIEWER_INCLUDE_DIR=%QGLDIR%\libQGLViewer -DQGLVIEWER_LIBRARIES=%QGLDIR%\libQGLViewer\QGLViewer\QGLViewer2.lib -DWITH_QT5:BOOL=ON -DBUILD_EXAMPLES:BOOL=ON -DBUILD_TESTING:BOOL=OFF -DBUILD_SHARED_LIBS:BOOL=FALSE   -DZLIB_LIBRARY=C:\zlib-dll\static32\zlibstat.lib -DZLIB_INCLUDE_DIR=C:\zlib -DBOOST_ROOT=C:\Libraries\boost .
+
+
+# -DBOOST_ROOT=C:\Libraries\boost_1_59_0  -DBOOST_LIBRARYDIR=C:\Libraries\boost_1_59_0\lib64-msvc-14.0  -DBoost_LIBRARIES=C:\Libraries\boost_1_59_0\stage\lib\libboost_zlib-vc120-mt-1_59.lib.
   #-DBoost_LIBRARIES=C:\\Libraries\\boost_1_59_0\\stage\\lib\\libboost_iostreams-vc120-mt-1_59.lib .
   #-DBOOST_ROOT=C:\Libraries\boost .
   
