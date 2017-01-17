@@ -9,6 +9,7 @@ message(STATUS "DGtal required dependencies: ")
 # Looking for boost
 # -----------------------------------------------------------------------------
 set(Boost_USE_STATIC_LIBS   ON)
+set(BOOST_ALL_DYN_LINK ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 set(Boost_FOUND FALSE)
