@@ -48,11 +48,11 @@ before_build:
   - cmd: mkdir c:\zlib
   - appveyor DownloadFile "https://github.com/madler/zlib/archive/v1.2.9.zip" -FileName zlib.zip
   - 7z x zlib.zip -oC:\zlib
-  - cmd: cd c:\zlib
-  - cmd: mkdir c:\zlib-install
-  - cmd: mkdir c:\zlib-build
-  - cmd: cd c:\zlib-build
-  - cmd: cmake -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_ -DCMAKE_INSTALL_PREFIX:PATH=c:\zlib-install c:\zlib
+  - cmd: cd C:\zlib
+  - cmd: mkdir C:\zlib-install
+  - cmd: mkdir C:\zlib-build
+  - cmd: cd C:\zlib-build
+  - cmd: cmake -G"%VS_GEN%" -DCMAKE_BUILD_TYPE=%CONFIG% -DZLIB_MANGLE_PREFIX:STRING=dcmqi_zlib_ -DCMAKE_INSTALL_PREFIX:PATH=c:\zlib-install C:\zlib
   - msbuild zlib.sln /m
   - cmd: msbuild INSTALL.vcxproj
 
