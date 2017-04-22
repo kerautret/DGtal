@@ -39,6 +39,7 @@ init:
   - set PATH=%QTDIR%\bin;%PATH%
   - set CACHEOK=FALSE
 
+
 # scripts that run after cloning repository
 install:
 
