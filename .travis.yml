@@ -53,6 +53,7 @@ addons:
     - ubuntu-toolchain-r-test
    packages:
     - libhdf5-serial-dev
+    - libhdf5-dev
     - libboost-dev
     - libcairo2-dev
     - doxygen
