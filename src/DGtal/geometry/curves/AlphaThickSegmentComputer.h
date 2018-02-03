@@ -46,6 +46,7 @@
 // Inclusions
 #include <iostream>
 #include "DGtal/base/Common.h"
+#include <DGtal/arithmetic/IntegerComputer.h>
 #include "DGtal/base/ReverseIterator.h"
 #include "DGtal/kernel/SpaceND.h"
 #include "DGtal/geometry/surfaces/ParallelStrip.h"
@@ -180,6 +181,45 @@ private:
     double actualThickness;
   };
 
+
+
+  struct ThickDSS{
+    ThickDSS(){
+    }
+    ThickDSS(const ThickDSS & other): myLowerLeaningPoint1(other.myLowerLeaningPoint1),
+                                      myUpperLeaningPoint1(other.myUpperLeaningPoint1),
+                                      myLowerLeaningPoint2(other.myLowerLeaningPoint2),
+                                      myUpperLeaningPoint2(other.myUpperLeaningPoint2),
+                                      myLeaningPoint1(other.myLeaningPoint1),
+                                      myLeaningPoint2(other.myLeaningPoint2),
+                                      myMu(other.myMu),
+                                      myOmega(other.myOmega),
+                                      myA(other.myA),
+                                      myB(other.myB)
+    {}
+    void updateMuOmega()
+    {
+      IntegerComputer<int> icomp;
+      int d = std::abs(icomp.gcd(myA,myB));
+      if(d != 0){
+        myA /=d; myB /=d;
+      }
+      myMu = (myA*myLowerLeaningPoint1[0]-myB*myLowerLeaningPoint1[1]);
+      myOmega = (myA*myUpperLeaningPoint1[0]-myB*myUpperLeaningPoint1[1])-myMu;
+    }    
+
+    DGtal::PointVector<2, int> myLowerLeaningPoint1;
+    DGtal::PointVector<2, int> myLowerLeaningPoint2;
+    DGtal::PointVector<2, int> myUpperLeaningPoint1;
+    DGtal::PointVector<2, int> myUpperLeaningPoint2;
+    
+    DGtal::PointVector<2, int> myLeaningPoint1;
+    DGtal::PointVector<2, int> myLeaningPoint2;
+
+    int myMu;
+    int myOmega;
+    int myA, myB;
+  };
 
   // ----------------------- Standard services ------------------------------
 public:
@@ -392,6 +432,10 @@ public:
 
 
 
+  
+
+  
+
   //-------------------- Primitive services -----------------------------
 
 
@@ -454,12 +498,34 @@ public:
 
   PointD getNormal() const;
 
+  /**
+   * @return the a value of the normal vector (a,b).
+   */
+  double a() const; 
 
+  /**
+   * @return the b value of the normal vector (a,b).
+   */
+  double b() const; 
+
+  double mu() const;
+
+  double omega() const;
+
+  
+  PointD dssLf() const;
+  PointD dssLl() const;
+  PointD dssUf() const;
+  PointD dssUl() const;
+  
+
+
+  
   /**
    * @return the thickness of the current segment.
    **/
   double getThickness() const;
-
+  
 
   /**
    * @return the mu parameter of the current segment (given from the segment ParalellStrip primitive).
@@ -473,12 +539,20 @@ public:
   double getNu() const;
 
 
-   /**
+  /**
    * @return the segment length defined from the bouding box (@see getBoundingBox).
    **/
   double getSegmentLength() const;
 
 
+  /**
+   * Checks whether a point is in the bounding box the AlphaThickSegment.
+   * @param[in] aPoint the point to be checked.
+   * @return 'true' if yes, 'false' otherwise.
+   **/
+  bool isInDSS(const InputPoint& aPoint) const;
+  
+  
   /**
    * @return 'true' if the points of the segment computer are stored in the main container.
    **/
@@ -598,6 +672,9 @@ private:
    */
   double myMaximalThickness;
 
+  
+  mutable ThickDSS myThickDSS; 
+  
   /**
    * To adjust the precision of the thickness estimation used in the comparison during the segment extension.
    */
@@ -628,7 +705,7 @@ private:
   unsigned int myNbPointsAddedFromIterators;
 
 
-
+  
 
     // ------------------------- Hidden services ------------------------------
 protected:

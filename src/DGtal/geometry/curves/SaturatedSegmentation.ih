@@ -417,7 +417,7 @@ DGtal::SaturatedSegmentation<TSegmentComputer>::SaturatedSegmentation
 }
 
 
-  template <typename TSegmentComputer>
+template <typename TSegmentComputer>
 inline
 void
 DGtal::SaturatedSegmentation<TSegmentComputer>::setSubRange
@@ -453,7 +453,7 @@ DGtal::SaturatedSegmentation<TSegmentComputer>::~SaturatedSegmentation()
 }
 
 
-  template <typename TSegmentComputer>
+template <typename TSegmentComputer>
 inline
 typename DGtal::SaturatedSegmentation<TSegmentComputer>::SegmentComputerIterator 
 DGtal::SaturatedSegmentation<TSegmentComputer>::begin() const

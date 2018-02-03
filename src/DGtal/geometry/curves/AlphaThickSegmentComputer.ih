@@ -86,8 +86,9 @@ AlphaThickSegmentComputer( const AlphaThickSegmentComputer & other ): myBegin(ot
                                                                       myState(other.myState),
                                                                       myPreviousState(other.myPreviousState), 
                                                                       myIsStoringPoints(other.myIsStoringPoints),
-                                                                      myNbPointsAddedFromIterators(other.myNbPointsAddedFromIterators) 
-   
+                                                                      myNbPointsAddedFromIterators(other.myNbPointsAddedFromIterators),
+                                                                      myThickDSS(other.myThickDSS)
+
 { 
 }
 
@@ -109,6 +110,7 @@ operator= ( const AlphaThickSegmentComputer & other )
       myNbPointsAddedFromIterators = other.myNbPointsAddedFromIterators;
       myBegin = other.myBegin;
       myEnd = other.myEnd;
+      myThickDSS = other.myThickDSS;
     }
   return *this;
 }
@@ -611,6 +613,21 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getSegmentLength
   return (pt2-pt1).norm();
 }
 
+template < typename TInputPoint, typename TConstIterator>
+inline
+bool 
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::isInDSS(const InputPoint& aPoint) const
+{
+  PointD pt1, pt2, pt3, pt4;
+  getBoundingBox(pt1, pt2, pt3, pt4);
+  PointD u1 = pt2-pt1;
+  PointD u2 = pt3-pt2;
+  PointD u3 = pt4-pt3;
+  PointD u4 = pt1-pt4;
+  return u1.dot(aPoint-pt1) >=0 && u2.dot(aPoint-pt2) >=0  && 
+         u3.dot(aPoint-pt3) >=0 && u4.dot(aPoint-pt4);
+  
+}
 
 
 template < typename TInputPoint, typename TConstIterator>
@@ -620,14 +637,58 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::computeParallelS
                                                                                            PointD &N, 
                                                                                            double &nu) const
 {
-  PointD dirSeg =  myState.edgeQh - myState.edgePh; 
-  N[0] = -dirSeg[1];
-  N[1] = dirSeg[0];
-  mu = (N[0]*myState.edgePh[0]+N[1]*myState.edgePh[1]);
-  nu = N[0]*myState.vertexSh[0]+N[1]*myState.vertexSh[1] - mu;
+  PointD pt1, pt2, pt3, pt4;
+  getBoundingBox(pt1, pt2, pt3, pt4);
+  PointD segmentLowerSupport = (pt1-pt2).getNormalized();
+  PointD segmentUpperSupport = (pt4-pt3).getNormalized();
+  bool isPQLower = true;
+  myThickDSS.myLeaningPoint1 =  myState.edgePh;
+  myThickDSS.myLeaningPoint2 =  myState.edgeQh;
+  
+  if(myState.edgePh!=pt2 && myState.edgePh!=pt3)
+    {
+      PointD u = (myState.edgePh-pt2).getNormalized();
+      PointD v = (myState.edgePh-pt3).getNormalized();
+      isPQLower = segmentLowerSupport.dot(u) >= segmentUpperSupport.dot(v);
+    }
+  if(isPQLower)
+    {
+      myThickDSS.myLowerLeaningPoint1 = myState.vertexSh;
+      myThickDSS.myLowerLeaningPoint2 = myState.vertexSh;
+      myThickDSS.myUpperLeaningPoint1 = myState.edgePh;
+      myThickDSS.myUpperLeaningPoint2 = myState.edgeQh;      
+    }
+  else
+    {
+      myThickDSS.myLowerLeaningPoint1 = myState.edgePh;
+      myThickDSS.myLowerLeaningPoint2 = myState.edgeQh;
+      myThickDSS.myUpperLeaningPoint1 = myState.vertexSh;
+      myThickDSS.myUpperLeaningPoint2 = myState.vertexSh;      
+    }
+  PointD frontDir  = pt1-pt2;
+  bool isLPoint1_2Front = frontDir.dot(myThickDSS.myLeaningPoint2-myThickDSS.myLeaningPoint1)>0;
+  if(!isLPoint1_2Front)
+    {
+      //trace.info() << "hereeeeee" << std::endl;
+       PointD tmp = myThickDSS.myLowerLeaningPoint1;
+       myThickDSS.myLowerLeaningPoint1 = myThickDSS.myLowerLeaningPoint2;
+       myThickDSS.myLowerLeaningPoint2 = tmp;
+       tmp = myThickDSS.myUpperLeaningPoint1; 
+       myThickDSS.myUpperLeaningPoint1 = myThickDSS.myUpperLeaningPoint2 ;
+       myThickDSS.myUpperLeaningPoint2 = tmp;       
+       myThickDSS.myLeaningPoint1 = myState.edgeQh;
+       myThickDSS.myLeaningPoint2 = myState.edgePh;
+    }
+
+  PointD dirSeg =  myThickDSS.myLeaningPoint2 - myThickDSS.myLeaningPoint1; 
+  N[0] = dirSeg[1];
+  N[1] = -dirSeg[0];
+  myThickDSS.myA =  N[0];
+  myThickDSS.myB = -N[1];
+  myThickDSS.updateMuOmega();
 }
 
- 
+
 template < typename TInputPoint, typename TConstIterator>
 inline
 double 
@@ -645,12 +706,98 @@ DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNormal() cons
   return primitive().normal();
 }
 
- 
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::a() const 
+
+{
+  primitive();
+  return myThickDSS.myA;
+}
+
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::b() const 
+{
+  primitive();
+  return myThickDSS.myB;
+}
+
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::mu() const 
+{
+  primitive();
+  return myThickDSS.myMu;
+  //  return -myNormalDirection[1];
+}
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+double
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::omega() const 
+{
+  //primitive();
+  myThickDSS.updateMuOmega();
+  return myThickDSS.myOmega;
+  //  return -myNormalDirection[1];
+}
+
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+typename DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::PointD
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssLl() const 
+{
+  primitive();
+  return myThickDSS.myLowerLeaningPoint2;
+}
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+typename DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::PointD
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssLf() const 
+{
+  primitive();
+  return myThickDSS.myLowerLeaningPoint1;
+}
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+typename DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::PointD
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssUl() const 
+{
+   primitive();
+  return myThickDSS.myUpperLeaningPoint2;
+}
+
+template < typename TInputPoint, typename TConstIterator>
+inline
+typename DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::PointD
+DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::dssUf() const 
+{
+   primitive();
+  return myThickDSS.myUpperLeaningPoint1;
+}
+
+
+
+
 template < typename TInputPoint, typename TConstIterator>
 inline
 double 
 DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getMu() const 
 {
+  //  return myMu;
+  // myLowerSupportPoint = myState.edgePh;
+  //myUpperSupportPoint = myState.vertexSh;
+  //return (myNormalDirection[0]*myLowerSupportPoint[0]+myNormalDirection[1]*myLowerSupportPoint[1]);
   return primitive().mu();
 }
 
@@ -660,6 +807,9 @@ inline
 double 
   DGtal::AlphaThickSegmentComputer< TInputPoint, TConstIterator>::getNu() const 
 {
+  //return myNu;
+  //double mu = getMu();
+  //return myNormalDirection[0]*myUpperSupportPoint[0]+myNormalDirection[1]*myUpperSupportPoint[1] - mu;  
   return primitive().nu();
 }
 

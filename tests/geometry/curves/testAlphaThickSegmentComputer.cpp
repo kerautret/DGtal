@@ -183,6 +183,20 @@ bool testAlphaThickSegmentConvexHullAndBox()
   nb++;
   trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
   trace.endBlock();
+
+
+
+
+  trace.beginBlock("Testing isInsideDSS() ");
+  bool isInside = anAlphaThickSegmentComputer.isInDSS(*(aContour.begin()+5));
+  trace.info() << "The point " << *(aContour.begin()) << "is inside ? " << (isInside ? "True": "False") << std::endl;
+  trace.info() << "Should be: True   " << std::endl;
+  nbok += isInside ? 1 : 0;
+  nb++;
+  trace.info() << "(" << nbok << "/" << nb << ") " << std::endl;
+  trace.endBlock();
+  
+
   return nbok == nb;
 }
 
