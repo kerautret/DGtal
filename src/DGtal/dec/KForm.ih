@@ -63,7 +63,8 @@ template <typename Calculus, DGtal::Order order, DGtal::Duality duality>
 DGtal::KForm<Calculus, order, duality>::KForm(ConstAlias<Calculus> _calculus)
     : myContainer((&_calculus)->kFormLength(order, duality)), myCalculus(&_calculus)
 {
-    clear();
+//    clear();
+  myContainer.setZero();
 }
 
 template <typename Calculus, DGtal::Order order, DGtal::Duality duality>
@@ -117,7 +118,8 @@ template <typename Calculus, DGtal::Order order, DGtal::Duality duality>
 void
 DGtal::KForm<Calculus, order, duality>::clear()
 {
-    myContainer.clear();
+  //myContainer.clear();
+  myContainer.setZero();
 }
 
 template <typename Calculus, DGtal::Order order, DGtal::Duality duality>

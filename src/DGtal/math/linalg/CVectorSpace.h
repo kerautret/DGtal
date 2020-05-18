@@ -100,7 +100,8 @@ namespace DGtal
 
       BOOST_CONCEPT_USAGE( CVectorSpace )
       {
-        z.clear();
+        //z.clear();
+        z.setZero();
         z = x + y;
         z = x - y;
         z = a * x;
