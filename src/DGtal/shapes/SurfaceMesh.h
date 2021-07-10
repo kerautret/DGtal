@@ -590,6 +590,12 @@ namespace DGtal
     const RealVector& faceNormal( Face f ) const
     { return myFaceNormals[ f ]; }
 
+     /// Check if face colors are stored.
+    /// @return true is the face colors are stored.
+    const bool isStoringFaceColors( ) const
+    { return mySaveFaceColor; }
+
+    
     ///  Set the color of a particular face of the mesh. If the mesh
     ///  does not yet store the color of all individual faces
     ///  (isStoringFaceColors to false) it fills each face color with

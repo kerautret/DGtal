@@ -111,14 +111,16 @@ writeOBJ( std::string            objfile,
       output_obj << "# " << smesh.vertexNormals().size() << " normal vectors" << std::endl;
     }
   // Taking care of materials
-  bool  has_material = ( smesh.nbFaces() == diffuse_colors.size() );
+  bool has_material = ( smesh.nbFaces() == diffuse_colors.size()) || smesh.isStoringFaceColors();
+  bool storedMat = smesh.isStoringFaceColors();
   Index idxMaterial = 0;
+  Index size = storedMat ? smesh.allIncidentVertices().size() : diffuse_colors.size();
   std::map<Color, Index > mapMaterial;
   if ( has_material )
     {
-      for ( Index f = 0; f < diffuse_colors.size(); ++f )
+      for ( Index f = 0; f < size; ++f )
         {
-          Color c = diffuse_colors[ f ];
+          Color c =  smesh.isStoringFaceColors() ? smesh.faceColor(f) : diffuse_colors[ f ];
           if ( mapMaterial.count( c ) == 0 )
             {
               MeshHelpers::exportMTLNewMaterial
@@ -136,9 +138,18 @@ writeOBJ( std::string            objfile,
   Index idx_f = 0;
   for ( auto f : smesh.allIncidentVertices() )
     {
-      output_obj << "usemtl material_"
-                 << ( has_material ? mapMaterial[ diffuse_colors[ idx_f ] ] : idxMaterial )
-                 << std::endl; 
+      if (!has_material)
+      {
+        output_obj << "usemtl material_"
+                  <<  idxMaterial
+                  << std::endl;
+      } else
+      {
+        output_obj << "usemtl material_"
+                  << mapMaterial[ storedMat ? smesh.faceColor(idx_f):
+                                              diffuse_colors[ idx_f ]  ]
+                  << std::endl;
+      }
       output_obj << "f";
       for ( auto v : f )
         if ( smesh.vertexNormals().empty() )

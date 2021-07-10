@@ -82,6 +82,8 @@ SurfaceMesh< PointVector<3,double>,
                        faces.cbegin(), faces.cend() );
   p.setFaceColor(0, DGtal::Color::Red);
   p.setFaceColor(5, DGtal::Color::Purple);
+  bool okw =  SurfaceMeshWriter< RealPoint, RealVector >::writeOBJ( "testWriterColor.obj", p );
+
   return p;
 }
 
@@ -294,6 +296,7 @@ SCENARIO( "SurfaceMesh< RealPoint3 > reader/writer tests", "[surfmesh][io]" )
     PolygonMesh readmesh;
     std::ostringstream output;
     bool okw = PolygonMeshWriter::writeOBJ( output, polymesh );
+    bool okw2 = PolygonMeshWriter::writeOBJ( "testWriter.obj", polymesh );
     std::string file = output.str();
     std::istringstream input( file ); 
     bool okr = PolygonMeshReader::readOBJ ( input,  readmesh );
