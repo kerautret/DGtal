@@ -154,7 +154,7 @@ setFaceColor(Face f, const DGtal::Color &aColor){
     myFaceColorList[f] = aColor;
   } else {
     mySaveFaceColor = true;
-    myFaceColorList.resize( myIncidentFaces.size() );
+    myFaceColorList.resize( nbFaces() );
     myFaceColorList[f] = aColor;
   }
 }

@@ -68,11 +68,15 @@ readOBJ( std::istream & input, SurfaceMesh & smesh )
 {
   std::vector<RealPoint>  vertices;
   std::vector<RealVector> normals;
+  std::vector<DGtal::Color> colors;
   std::vector< std::vector< Index > > faces;
   std::vector< std::vector< Index > > faces_normals_idx;
+  std::map<std::string, DGtal::Color> material;
   std::string linestr;
   std::string keyword;
   std::string indices;
+  bool useMtllib = false;
+  DGtal::Color currentMtlCol = DGtal::Color::White;
   RealPoint  p;
   RealVector n;
   std::getline( input, linestr );
@@ -101,12 +105,28 @@ readOBJ( std::istream & input, SurfaceMesh & smesh )
           face.push_back( v - 1 );
           face_normals.push_back( vn - 1 );
           indices = "";
+          
         }
         if ( ! face.empty() && verifyIndicesUniqueness( face ) )
           {
             faces.push_back( face );
             faces_normals_idx.push_back( face_normals );
           }
+        if (useMtllib){
+          colors.push_back(currentMtlCol );
+        }
+      } else if (keyword == "mtllib") {
+        std::string name;
+        lineinput >> name;
+        std::ifstream is (name);
+        material = readMaterial(is);
+        useMtllib = true;
+      }else if (keyword ==  "usemtl") {
+        std::string name;
+        lineinput >> name;
+        if (material.count(name) !=0 ){
+          currentMtlCol = material[name];
+        }
       }
       // Weird: necessary to clear them.
       keyword = ""; linestr = "";
@@ -151,7 +171,47 @@ readOBJ( std::istream & input, SurfaceMesh & smesh )
                         << " Error setting face normals." << std::endl;
       ok = ok && ok_face_normals;
     }
+  if (!colors.empty()){
+    for (Index i = 0; i < colors.size(); i++){
+      smesh.setFaceColor(i, colors[i]);
+    }
+  }
   return ( ! input.bad() ) && ok;
+}
+//-----------------------------------------------------------------------------
+template <typename TRealPoint, typename TRealVector>
+std::map<std::string, DGtal::Color>
+DGtal::SurfaceMeshReader<TRealPoint, TRealVector>::readMaterial( std::istream & input)
+{
+  std::string linestr;
+  std::string keyword;
+  std::map<std::string, DGtal::Color> resultMap;
+  std::getline( input, linestr );
+  double r, g, b;
+  Index l = 0;
+  std::string currentMtlName="";
+  for ( ; input.good() && ! input.eof(); std::getline( input, linestr ), l++ )
+    {
+      if ( linestr.empty() ) continue; // skip empty line
+      if ( linestr[0] == '#' ) continue; // skip comment line
+      std::istringstream lineinput( linestr );
+      std::operator>>( lineinput, keyword ); // lineinput >> keyword;
+      if ( keyword == "newmtl" ) {
+        std::string nameMtl;
+        lineinput >> nameMtl;
+        if (nameMtl != ""){
+          currentMtlName = nameMtl;
+        }
+      } else if (keyword == "Kd" && currentMtlName != "" ){
+        lineinput >> r >> g >> b;
+        DGtal::Color c (static_cast<unsigned char>(r*255.0),
+                        static_cast<unsigned char>(g*255),
+                        static_cast<unsigned char>(b*255));
+        resultMap[currentMtlName] = c;
+        currentMtlName = "";
+      }
+    }
+  return resultMap;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

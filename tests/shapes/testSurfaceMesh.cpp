@@ -294,18 +294,25 @@ SCENARIO( "SurfaceMesh< RealPoint3 > reader/writer tests", "[surfmesh][io]" )
                                                  10, 10, NormalsType::VERTEX_NORMALS );
   WHEN( "Writing the mesh as an OBJ file and reading into another mesh" ) { 
     PolygonMesh readmesh;
+    PolygonMesh readmeshCol;
     std::ostringstream output;
     bool okw = PolygonMeshWriter::writeOBJ( output, polymesh );
     bool okw2 = PolygonMeshWriter::writeOBJ( "testWriter.obj", polymesh );
     std::string file = output.str();
     std::istringstream input( file ); 
     bool okr = PolygonMeshReader::readOBJ ( input,  readmesh );
+    std::ifstream ifObjCol ("testWriterColor.obj");
+    bool okrCol = PolygonMeshReader::readOBJ (ifObjCol,  readmeshCol );
+
     THEN( "The read mesh is the same as the original one" ) {
       CAPTURE( file );
       CAPTURE( polymesh );
       CAPTURE( readmesh );
       REQUIRE( okw );
       REQUIRE( okr );
+      REQUIRE( okrCol );
+      REQUIRE( readmeshCol.faceColor(0) == DGtal::Color::Red);
+      REQUIRE( readmeshCol.faceColor(5) == DGtal::Color::Purple);
       REQUIRE( polymesh.Euler()      == readmesh.Euler() );
       REQUIRE( polymesh.nbVertices() == readmesh.nbVertices() );
       REQUIRE( polymesh.nbEdges()    == readmesh.nbEdges() );
