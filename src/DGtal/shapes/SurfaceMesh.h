@@ -46,6 +46,7 @@
 #include "DGtal/base/Common.h"
 #include "DGtal/base/IntegerSequenceIterator.h"
 #include "DGtal/helpers/StdDefs.h"
+#include "DGtal/io/Color.h"
 
 namespace DGtal
 {
@@ -116,7 +117,10 @@ namespace DGtal
     typedef std::vector< Face >                     Faces;
     typedef std::vector< WeightedFace >             WeightedFaces;
     typedef std::pair< Vertex, Vertex >             VertexPair;
-
+    /// The type to store the color associated to each face
+    typedef  std::vector<DGtal::Color> ColorStorage;
+    
+    
     // Required by CUndirectedSimpleLocalGraph
     typedef std::set<Vertex>                   VertexSet;
     template <typename Value> struct           VertexMap {
@@ -137,6 +141,7 @@ namespace DGtal
     ~SurfaceMesh() = default;
     /// Default constructor.
     ///
+    ///   @param saveFaceColor used to memorize the color of a face (default= false)
     /// A typical construction usage is
     /// @code
     /// std::vector< RealPoint > positions = { { 0, 0, 5 }, { 1, 1, 3 }, { -1, 1, 3 }, { -1, -1, 3 }, { 1, -1, 3 } };
@@ -144,7 +149,7 @@ namespace DGtal
     /// SurfMesh pyramid_mesh;
     /// pyramid_mesh.init( positions.cbegin(), positions.cend(), faces.cbegin(), faces.cend() );
     /// @endcode
-    SurfaceMesh() = default;
+    SurfaceMesh(bool saveFaceColor=false) = default;
     /// Default copy constructor.
     /// @param other the object to clone
     SurfaceMesh( const Self& other ) = default;
@@ -168,6 +173,7 @@ namespace DGtal
     ///   faces of the mesh, each face being a range of vertex indices.
     /// @param itVerticesEnd end of range of iterators pointing on the (oriented)
     ///   faces of the mesh, each face being a range of vertex indices.
+    /// @param saveFaceColor used to memorize the color of a face (default= false)
     ///
     /// A typical construction usage is
     /// @code
@@ -177,7 +183,8 @@ namespace DGtal
     /// @endcode
     template <typename RealPointIterator, typename VerticesIterator>
     SurfaceMesh( RealPointIterator itPos, RealPointIterator itPosEnd,
-                 VerticesIterator itVertices, VerticesIterator itVerticesEnd );
+                 VerticesIterator itVertices, VerticesIterator itVerticesEnd,
+                 bool saveFaceColor=false );
 
     /// Initializes a mesh from vertex positions and polygonal faces
     /// (clears everything before).
@@ -268,6 +275,28 @@ namespace DGtal
     /// @return a vector of unit vectors on vertices approximating \a fuvectors.
     std::vector<RealVector> computeVertexUnitVectorsFromFaceUnitVectors
     ( const std::vector<RealVector>& fuvectors ) const;
+    
+   
+    ///  Set the color of a particular face of the mesh. If the mesh
+    ///  does not yet store the color of all individual faces
+    ///  (isStoringFaceColors to false) it fills each face color with
+    ///  the default color and the value of isStoringFaceColors is set
+    ///  to true.
+    ///
+    /// @param[in] i the index of the face
+    /// @param[in] aColor the color for the considered face.
+    ///
+    void setFaceColor(Face f, const DGtal::Color &aColor);
+
+    /// Return a reference to a face Color.
+    /// @param f the face.
+    /// @return the color of the face.
+    ///
+    const Color & getFaceColor(Face f) const;
+
+
+
+
     
     /// @}
 
@@ -749,12 +778,17 @@ namespace DGtal
     /// face to its left, being defined ccw, means that the face is
     /// some `(..., i, j, ... )`.
     std::vector< Faces >        myEdgeLeftFaces;
-
+    /// For each face, its color
+    ColorStorage myFaceColorList;
+    /// default color of the mesh (used if mySaveFaceColor is false)
+    DGtal::Color myDefaultColor;
+    
     // ------------------------- Private Datas --------------------------------
   private:
 
+    bool mySaveFaceColor;
 
-    // ------------------------- Internals ------------------------------------
+   // ------------------------- Internals ------------------------------------
   protected:
 
     /// Computes neighboring information.
