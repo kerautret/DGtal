@@ -78,8 +78,11 @@ SurfaceMesh< PointVector<3,double>,
   faces.push_back( { 3, 2, 6, 7 } );
   faces.push_back( { 2, 0, 4, 6 } );
   faces.push_back( { 4, 5, 8, 9 } );
-  return PolygonMesh( positions.cbegin(), positions.cend(),
-                      faces.cbegin(), faces.cend() );
+  PolygonMesh p ( positions.cbegin(), positions.cend(),
+                       faces.cbegin(), faces.cend() );
+  p.setFaceColor(0, DGtal::Color::Red);
+  p.setFaceColor(5, DGtal::Color::Purple);
+  return p;
 }
 
 SCENARIO( "SurfaceMesh< RealPoint3 > concept check tests", "[surfmesh][concepts]" )
@@ -121,6 +124,11 @@ SCENARIO( "SurfaceMesh< RealPoint3 > build tests", "[surfmesh][build]" )
         REQUIRE( polymesh.nbFaces() == 6 );
         REQUIRE( polymesh.Euler() == 1 );
       }
+    THEN( "The first and last face colors are respectively red and purple  " )
+    {
+      REQUIRE( polymesh.faceColor(0) == DGtal::Color::Red );
+      REQUIRE( polymesh.faceColor(5) == DGtal::Color::Purple );
+    }
     THEN( "Breadth-first visiting the mesh from vertex 0, visit {0}, then {1,2,4}, then {3,5,6,9}, then {7,8}." )
       {
         BreadthFirstVisitor< PolygonMesh > visitor( polymesh, 0 );

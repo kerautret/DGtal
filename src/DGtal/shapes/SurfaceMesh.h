@@ -149,7 +149,7 @@ namespace DGtal
     /// SurfMesh pyramid_mesh;
     /// pyramid_mesh.init( positions.cbegin(), positions.cend(), faces.cbegin(), faces.cend() );
     /// @endcode
-    SurfaceMesh(bool saveFaceColor=false) = default;
+    SurfaceMesh(bool saveFaceColor=false);
     /// Default copy constructor.
     /// @param other the object to clone
     SurfaceMesh( const Self& other ) = default;
@@ -275,27 +275,6 @@ namespace DGtal
     /// @return a vector of unit vectors on vertices approximating \a fuvectors.
     std::vector<RealVector> computeVertexUnitVectorsFromFaceUnitVectors
     ( const std::vector<RealVector>& fuvectors ) const;
-    
-   
-    ///  Set the color of a particular face of the mesh. If the mesh
-    ///  does not yet store the color of all individual faces
-    ///  (isStoringFaceColors to false) it fills each face color with
-    ///  the default color and the value of isStoringFaceColors is set
-    ///  to true.
-    ///
-    /// @param[in] i the index of the face
-    /// @param[in] aColor the color for the considered face.
-    ///
-    void setFaceColor(Face f, const DGtal::Color &aColor);
-
-    /// Return a reference to a face Color.
-    /// @param f the face.
-    /// @return the color of the face.
-    ///
-    const Color & getFaceColor(Face f) const;
-
-
-
 
     
     /// @}
@@ -610,6 +589,24 @@ namespace DGtal
     /// @return the non-mutable normal associated to \a f.
     const RealVector& faceNormal( Face f ) const
     { return myFaceNormals[ f ]; }
+
+    ///  Set the color of a particular face of the mesh. If the mesh
+    ///  does not yet store the color of all individual faces
+    ///  (isStoringFaceColors to false) it fills each face color with
+    ///  the default color and the value of isStoringFaceColors is set
+    ///  to true.
+    ///
+    /// @param[in] i the index of the face
+    /// @param[in] aColor the color for the considered face.
+    ///
+    void setFaceColor(Face f, const DGtal::Color &aColor);
+
+    /// Return a reference to a face Color.
+    /// @param f the face.
+    /// @return the color of the face.
+    ///
+    const Color & faceColor(Face f) const;
+
     
     /// @return the average of the length of edges.
     Scalar averageEdgeLength() const;

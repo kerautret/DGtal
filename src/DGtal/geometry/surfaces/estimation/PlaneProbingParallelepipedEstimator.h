@@ -81,7 +81,7 @@ namespace DGtal
       class NotAbovePredicate
       {
       public:
-
+      
       using Point   = typename Self::Point;
       using Integer = typename Self::Integer;
 

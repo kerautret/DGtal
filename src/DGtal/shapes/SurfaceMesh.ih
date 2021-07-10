@@ -40,14 +40,27 @@
 // ----------------------- Standard services ------------------------------
 
 //-----------------------------------------------------------------------------
+
+template <typename TRealPoint, typename TRealVector>
+DGtal::SurfaceMesh<TRealPoint, TRealVector>::
+SurfaceMesh( bool saveFaceColor )
+{
+  mySaveFaceColor=saveFaceColor;
+  myDefaultColor = DGtal::Color::White;
+}
+
+
 template <typename TRealPoint, typename TRealVector>
 template <typename RealPointIterator, typename VerticesIterator>
 DGtal::SurfaceMesh<TRealPoint, TRealVector>::
 SurfaceMesh( RealPointIterator itPos, RealPointIterator itPosEnd,
-             VerticesIterator itVertices, VerticesIterator itVerticesEnd )
+             VerticesIterator itVertices, VerticesIterator itVerticesEnd,
+             bool saveFaceColor)
 {
   bool ok = init( itPos, itPosEnd, itVertices, itVerticesEnd );
   if ( !ok ) clear();
+  mySaveFaceColor=saveFaceColor;
+  myDefaultColor = DGtal::Color::White;
 }
 
 //-----------------------------------------------------------------------------
@@ -61,6 +74,7 @@ init( RealPointIterator itPos, RealPointIterator itPosEnd,
   clear();
   myPositions = std::vector< RealPoint >( itPos, itPosEnd );
   myIncidentFaces.resize( myPositions.size() );
+  myFaceColorList.resize( myIncidentFaces.size() );
   Index f = 0; // current face index
   bool ok = true;
   for ( ; itVertices != itVerticesEnd; ++itVertices, ++f )
@@ -101,6 +115,7 @@ clear()
   myPositions.clear();
   myVertexNormals.clear();
   myFaceNormals.clear();
+  myFaceColorList.clear();
   myNeighborFaces.clear();
   myNeighborVertices.clear();
   myEdgeVertices.clear();
@@ -130,6 +145,36 @@ setFaceNormals( RealVectorIterator itN, RealVectorIterator itNEnd )
   myFaceNormals = std::vector< RealVector >( itN, itNEnd );
   return myFaceNormals.size() == myIncidentVertices.size();
 }
+//-----------------------------------------------------------------------------
+template <typename TRealPoint, typename TRealVector>
+void
+DGtal::SurfaceMesh<TRealPoint, TRealVector>::
+setFaceColor(Face f, const DGtal::Color &aColor){
+  if (mySaveFaceColor){
+    myFaceColorList[f] = aColor;
+  } else {
+    mySaveFaceColor = true;
+    myFaceColorList.resize( myIncidentFaces.size() );
+    myFaceColorList[f] = aColor;
+  }
+}
+template <typename TRealPoint, typename TRealVector>
+inline
+const DGtal::Color &
+DGtal::SurfaceMesh<TRealPoint, TRealVector>::
+faceColor(Face f) const
+{
+  if(mySaveFaceColor)
+    {
+      return myFaceColorList.at(f);
+    }
+  else
+    {
+      return myDefaultColor;
+    }
+}
+
+
 
 //-----------------------------------------------------------------------------
 template <typename TRealPoint, typename TRealVector>
@@ -618,7 +663,9 @@ selfDisplay ( std::ostream & out ) const
       << " #VN=" << myVertexNormals.size()
       << " #E=" << myEdgeVertices.size()
       << " #F=" << myIncidentVertices.size()
-      << " #FN=" << myFaceNormals.size();
+      << " #FN=" << myFaceNormals.size()
+      << " #FC=" << myFaceColorList.size();
+
   double nb_nf  = 0.0;
   double nb_nv  = 0.0;
   double nb_nfe = 0.0;
