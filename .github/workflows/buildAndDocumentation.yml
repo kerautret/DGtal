@@ -31,7 +31,7 @@ jobs:
 
      - name: Get white list tools
        run : |
-         echo "::set-output name=WHITE_LIST::$({{runner.workspace}}/DGtalTools/cmake/create_whitelist.sh)"
+         echo "::set-output name=WHITE_LIST::$({{runner.workspace}}/DGtal/cmake/create_whitelist.sh)"
        id: whitelist
 
 
