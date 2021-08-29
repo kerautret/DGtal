@@ -48,13 +48,13 @@ jobs:
        if: matrix.os == 'ubuntu-latest'
        shell: bash
        working-directory: ${{runner.workspace}}/build
-       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CONFIG_GLOBAL $CONFIG_LINUX -G Ninja
+       run: cmake $GITHUB_WORKSPACE -DDGTAL_RANDOMIZED_TESTING_WHITELIST="${{ steps.whitelist.outputs.WHITE_LIST }}" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CONFIG_GLOBAL $CONFIG_LINUX -G Ninja
 
      - name: Configure CMake (macOS)
        if: matrix.os == 'macOS-latest'
        shell: bash
        working-directory: ${{runner.workspace}}/build
-       run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CONFIG_GLOBAL $CONFIG_MAC -G Ninja
+       run: cmake $GITHUB_WORKSPACE -DDGTAL_RANDOMIZED_TESTING_WHITELIST="${{ steps.whitelist.outputs.WHITE_LIST }}"  -DCMAKE_BUILD_TYPE=$BUILD_TYPE $CONFIG_GLOBAL $CONFIG_MAC -G Ninja
 
      - name: Build
        working-directory: ${{runner.workspace}}/build
@@ -65,7 +65,7 @@ jobs:
      - name: Test
        working-directory: ${{runner.workspace}}/build
        shell: bash
-       run: ctest -C $BUILD_TYPE  --output-on-failure $EXCLUDE_TESTS -DDGTAL_RANDOMIZED_TESTING_WHITELIST="${{ steps.whitelist.outputs.WHITE_LIST }}"
+       run: ctest -C $BUILD_TYPE  --output-on-failure $EXCLUDE_TESTS
 
      - name: DGtalTools (linux only, we check this PR against DGtalTools master)
        if: matrix.os == 'ubuntu-latest'
