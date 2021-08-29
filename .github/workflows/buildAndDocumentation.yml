@@ -29,7 +29,7 @@ jobs:
            sudo apt-get update
            sudo apt-get install zsh libqglviewer-dev-qt5 libboost-dev libeigen3-dev ninja-build libhdf5-serial-dev libboost-dev libcairo2-dev libgmp-dev libgraphicsmagick++1-dev libfftw3-dev
 
-     - name: Get white list tools
+     - name: Get white list of tests
        run : |
          echo "::set-output name=WHITE_LIST::$({{runner.workspace}}/DGtal/.github/workflows/create_whitelist.sh)"
        id: whitelist
@@ -63,7 +63,7 @@ jobs:
      - name: Test
        working-directory: ${{runner.workspace}}/build
        shell: bash
-       run: ctest -C $BUILD_TYPE  --output-on-failure $EXCLUDE_TESTS -DDGTAL_RANDOMIZED_TESTING_WHITELIST="${{ steps.whitelist.outputs.WHITE_LIST }}""
+       run: ctest -C $BUILD_TYPE  --output-on-failure $EXCLUDE_TESTS -DDGTAL_RANDOMIZED_TESTING_WHITELIST="${{ steps.whitelist.outputs.WHITE_LIST }}"
 
      - name: DGtalTools (linux only, we check this PR against DGtalTools master)
        if: matrix.os == 'ubuntu-latest'
