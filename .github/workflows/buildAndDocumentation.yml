@@ -31,7 +31,7 @@ jobs:
 
      - name: Get white list of tests
        run : |
-         echo "::set-output name=WHITE_LIST::$({{runner.workspace}}/DGtal/.github/workflows/create_whitelist.sh)"
+         echo "::set-output name=WHITE_LIST::$(${{runner.workspace}}/DGtal/.github/workflows/create_whitelist.sh)"
        id: whitelist
 
 
@@ -74,7 +74,7 @@ jobs:
            cd DGtalTools
            mkdir buildDGtalTools
            cd buildDGtalTools
-           whitelistTools=$(cat ${{runner.workspace}}/DGtal/cmake/whiteListBuildTools.txt)
+           whitelistTools=$(cat ${{runner.workspace}}/DGtalTools/cmake/whiteListBuildTools.txt)
            echo  cmake .. -DDGTAL_DIR=${{runner.workspace}}/build  -DDGTALTOOLS_RANDOMIZED_BUILD_THRESHOLD=25  -DDGTALTOOLS_RANDOMIZED_BUILD_WHITELIST=$whitelistTools -G Ninja
            cmake .. -DDGtal_DIR=${{runner.workspace}}/build  -DDGTALTOOLS_RANDOMIZED_BUILD_THRESHOLD=25 -G Ninja
            ninja
