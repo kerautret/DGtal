@@ -23,7 +23,7 @@ jobs:
     steps:
      - uses: actions/checkout@v2
        with:
-          fetch-depth: 5
+          fetch-depth: 10
 
      - name: Install linux deps
        if: matrix.os == 'ubuntu-latest'
