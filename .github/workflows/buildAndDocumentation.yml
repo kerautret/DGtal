@@ -76,7 +76,7 @@ jobs:
            cd DGtalTools
            mkdir buildDGtalTools
            cd buildDGtalTools
-           whitelistTools=$(cat ${{runner.workspace}}/DGtalTools/cmake/whiteListBuildTools.txt)
+           whitelistTools=$(cat ${{runner.workspace}}/build/DGtalTools/cmake/whiteListBuildTools.txt)
            echo  cmake .. -DDGTAL_DIR=${{runner.workspace}}/build  -DDGTALTOOLS_RANDOMIZED_BUILD_THRESHOLD=25  -DDGTALTOOLS_RANDOMIZED_BUILD_WHITELIST=$whitelistTools -G Ninja
            cmake .. -DDGtal_DIR=${{runner.workspace}}/build  -DDGTALTOOLS_RANDOMIZED_BUILD_THRESHOLD=25 -G Ninja
            ninja
