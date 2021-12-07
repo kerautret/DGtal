@@ -50,7 +50,9 @@ endif()
 if (MSVC)
   set(CMAKE_DEBUG_POSTFIX "d")
 endif()
-
+if(APPLE)
+    set(CMAKE_CXX_FLAGS "--sysroot ${CMAKE_OSX_SYSROOT} ${CMAKE_CXX_FLAGS}")
+endif()
 # -----------------------------------------------------------------------------
 # GCC 10.1 Incompatibility
 # -----------------------------------------------------------------------------
