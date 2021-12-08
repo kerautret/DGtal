@@ -37,7 +37,7 @@ jobs:
      - name: Install macOS deps
        if: matrix.os == 'macOS-latest'
        run: |
-           brew install boost ninja eigen gmp itk 
+           brew install boost fftw ninja eigen gmp itk 
            sudo xcode-select -s /Library/Developer/CommandLineTools
 
             
