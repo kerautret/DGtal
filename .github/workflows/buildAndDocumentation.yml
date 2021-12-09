@@ -38,7 +38,7 @@ jobs:
        if: matrix.os == 'macOS-latest'
        run: |
            brew update && brew upgrade
-           brew install boost fftw ninja eigen gmp  
+           brew install boost fftw ninja eigen gmp  itk
            sudo xcode-select -s /Library/Developer/CommandLineTools
 
             
