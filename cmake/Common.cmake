@@ -25,11 +25,7 @@ foreach(p LIB BIN INCLUDE DATA)
   set(INSTALL_${p}_DIR "${CMAKE_INSTALL_PREFIX}/${INSTALL_${p}_DIR_RELATIVE}")
 endforeach()
 
-if(APPLE)
-    set (CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version" FORCE)
-    set (CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Architectures" FORCE)
-    set (CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET[arch=arm64] "11.0" CACHE STRING "arm 64 minimum deployment target" FORCE)
-endif()
+
 
 
 # -----------------------------------------------------------------------------
