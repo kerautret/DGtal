@@ -204,7 +204,7 @@ endif()
 # -----------------------------------------------------------------------------
 set(ITK_FOUND_DGTAL 0)
 if(WITH_ITK)
-  find_package(ITK REQUIRED)
+  find_package(ITK REQUIRED ITKFFT)
   if(ITK_FOUND)
     set(ITK_FOUND_DGTAL 1)
     include(${ITK_USE_FILE})
