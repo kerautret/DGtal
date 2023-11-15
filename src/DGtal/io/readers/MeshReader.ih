@@ -42,7 +42,7 @@
 
 #include "DGtal/helpers/StdDefs.h"
 #include "DGtal/io/readers/SurfaceMeshReader.h"
-
+#include "DGtal/io/readers/GenericReader.h"
 ///////////////////////////////////////////////////////////////////////////////
 // Implementation of inline methods                                          //
 
@@ -317,17 +317,25 @@ DGtal::MeshReader<TPoint>::
 importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
 	       bool onlyFaceVertex )
 {
+  typedef DGtal::ImageContainerBySTLMap<DGtal::Z2i::Domain, unsigned int> Image2D;
   typedef typename Mesh<TPoint>::Index Index;
+  std::vector<DGtal::Z2i::RealPoint>  textCoords;
   std::vector<TPoint>  vertices;
   std::vector<DGtal::Color> colors;
-  std::vector< std::vector< Index > > faces;
+  std::vector<std::vector< Index > > faces;
+  std::vector< std::vector< Index > > textureFaces;
+
   std::map<std::string, DGtal::Color> material;
+  std::map<std::string, std::string> textureNames;
+  std::string path = "";
   std::string linestr;
   std::string keyword;
   std::string indices;
+  Image2D imgTexture = Image2D(Z2i::Domain());
   bool useMtllib = false;
   DGtal::Color currentMtlCol = DGtal::Color::White;
   TPoint  p;
+  DGtal::Z2i::RealPoint tc;
   std::ifstream input;
   DGtal::IOException dgtalio;
   try
@@ -345,6 +353,7 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
   input.open (filename.c_str(), std::ifstream::in);
   std::getline( input, linestr );
   Index l = 0;
+  bool hasLoadTexture = false;
   for ( ; input.good() && ! input.eof(); std::getline( input, linestr ), l++ )
     {
       if ( linestr.empty() ) continue; // skip empty line
@@ -356,25 +365,35 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
         lineinput >> p[ 0 ] >> p[ 1 ] >> p[ 2 ];
         vertices.push_back( p );
       }
+        if ( keyword == "vt" )
+        {
+          lineinput >> tc[ 0 ] >> tc[ 1 ];
+          textCoords.push_back( tc );
+        }
       else if ( keyword == "f" )
       {
         std::vector< Index > face;
-        while ( ! lineinput.eof() )
-        {
-          std::operator>>( lineinput, indices ); // lineinput >> indices;
-          if ( indices.empty() ) break;
-          auto vtxinfo = SurfaceMeshReader<TPoint, Z3i::RealVector >::split( indices, '/' );
-          if ( vtxinfo.size() == 0 ) break;
-          int  v  = std::stoi( vtxinfo[ 0 ] )-1;
-          if (v < 0 )
-          { // special case of relative indices (ie negative index);
-            v = (int)vertices.size() + v+1; 
+        std::vector< Index > faceText;
+          while ( ! lineinput.eof() )
+          {
+              std::operator>>( lineinput, indices ); // lineinput >> indices;
+              if ( indices.empty() ) break;
+              auto vtxinfo = SurfaceMeshReader<TPoint, Z3i::RealVector >::split( indices, '/' );
+              if ( vtxinfo.size() == 0 ) break;
+              int  v  = std::stoi( vtxinfo[ 0 ] )-1;
+              if (v < 0 )
+              { // special case of relative indices (ie negative index);
+                  v = (int)vertices.size() + v+1;
+              }
+              face.push_back( v);
+              indices = "";
+              if ( vtxinfo.size() > 1 ){
+                  faceText.push_back(std::stoi(vtxinfo[1]));
+              }
           }
-          face.push_back( v);
-          indices = "";
-        }
         if ( ! face.empty() && verifyIndicesUniqueness( face ) )
           {
+              textureFaces.push_back(faceText);
             faces.push_back( face );
             if (useMtllib)
             {
@@ -392,12 +411,15 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
         { // special for windows.
           iSep = filename.find_last_of('\\');
         }
-        std::string path = filename.substr(0, iSep+1);
+        path = filename.substr(0, iSep+1);
         std::stringstream matPathName ;
         matPathName << path << name;
         std::ifstream is (matPathName.str());
         if (is.good()){
           material = MeshReader<TPoint>::readMaterial(is);
+          std::ifstream iTex (matPathName.str());
+          textureNames = MeshReader<TPoint>::readTextureMaterial(iTex);
+          iTex.close();
           useMtllib = true;
           is.close();
         }else {
@@ -407,10 +429,14 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
             { // special for windows.
               iSep = name.find_last_of('\\');
             }
+             path = name.substr(0, iSep+1);
             std::string pathMesh = name.substr(iSep+1,name.size());
             std::ifstream is2 (path+pathMesh);
             if (is2.good()){
                material = MeshReader<TPoint>::readMaterial(is2);
+               std::ifstream iTex (path+pathMesh);
+               textureNames = MeshReader<TPoint>::readTextureMaterial(iTex);
+               iTex.close();
                useMtllib = true;
             }
             is2.close();
@@ -418,15 +444,24 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
       }
       else if (keyword ==  "usemtl")
       {
-        std::string name;
-        std::operator>>( lineinput, name );
-        if (material.count(name) !=0 )
-        {
-          currentMtlCol = material[name];
-        }
+          std::string name;
+          std::operator>>( lineinput, name );
+          if (material.count(name) !=0 )
+          {
+              currentMtlCol = material[name];
+          }
+          if (textureNames.count(name) !=0 ){
+              imgTexture = DGtal::GenericReader<Image2D>::import(path + textureNames[name]);
+              hasLoadTexture = true;
+          }
       }
       // Weird: necessary to clear them.
       keyword = ""; linestr = "";
+    }
+    // if the texture is not listed inside material
+    if (!textureNames.empty() && !hasLoadTexture){
+        imgTexture = DGtal::GenericReader<Image2D>::import(path + (*textureNames.begin()).second);
+        hasLoadTexture = true;
     }
   // Creating Mesh
   trace.info() << "[MeshReader::readOBJ] Read"
@@ -450,6 +485,22 @@ importOBJFile( const std::string & filename, DGtal::Mesh<TPoint> & mesh,
       mesh.setFaceColor(i, colors[i]);
     }
   }
+    if (!textCoords.empty()){
+        for (Index i = 0; i < faces.size(); i++){
+            auto lt = textureFaces[i];
+            Z2i::RealPoint mT;
+            for (Index k = 0; k < lt.size(); k++ ){
+                mT = mT+ textCoords[lt[k]];
+            }
+            mT /= (double) lt.size();
+            Z2i::Point p (mT[0]*imgTexture.domain().upperBound()[0],
+                          (1.0-mT[1])*imgTexture.domain().upperBound()[1]);
+            
+            if (imgTexture.domain().isInside(p)){
+                mesh.setFaceColor(i, DGtal::Color(imgTexture(p)));
+            }
+        }
+    }
   if (onlyFaceVertex && ! input.bad()){
      mesh.removeIsolatedVertices();
   }
@@ -529,6 +580,46 @@ DGtal::MeshReader<TPoint>::readMaterial( std::istream & input)
         currentMtlName = "";
       }
     }
+  return resultMap;
+}
+
+
+template <typename TPoint>
+std::map<std::string, std::string>
+DGtal::MeshReader<TPoint>::readTextureMaterial( std::istream & input)
+{
+  typedef unsigned int Index;
+  std::string linestr;
+  std::string keyword;
+  std::map<std::string, std::string> resultMap;
+  std::getline( input, linestr );
+  double r, g, b;
+  Index l = 0;
+  std::string currentMtlName="";
+  for ( ; input.good() && ! input.eof(); std::getline( input, linestr ), l++ )
+    {
+      if ( linestr.empty() ) continue; // skip empty line
+      if ( linestr[0] == '#' ) continue; // skip comment line
+      std::istringstream lineinput( linestr );
+      std::operator>>( lineinput, keyword ); // lineinput >> keyword;
+      if ( keyword == "newmtl" )
+      {
+        std::string nameMtl;
+        std::operator>>( lineinput, nameMtl );
+        if (nameMtl != "")
+        {
+          currentMtlName = nameMtl;
+        }
+      }
+      else if (keyword == "map_Kd" && currentMtlName != "" )
+      {
+        std::string nameImage = "";
+        lineinput >> nameImage;
+        resultMap[currentMtlName] = nameImage;
+      }
+    
+    }
+    
   return resultMap;
 }
 
