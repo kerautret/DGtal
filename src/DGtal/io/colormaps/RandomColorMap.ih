@@ -61,6 +61,7 @@ DGtal::RandomColorMap::RandomColorMap(const unsigned int &aFirstIndex, const uns
 inline
 void
 DGtal::RandomColorMap::associateRandomIndexColor(){
+  srand (time(NULL));
   for(unsigned int i=myMin; i<=myMax; i++){
     myColorIndex.push_back(myMax+1);
     myFreeColorIndex.push_back(i);
