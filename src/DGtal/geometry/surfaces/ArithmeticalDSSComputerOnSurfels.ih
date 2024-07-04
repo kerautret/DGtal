@@ -560,18 +560,16 @@ DGtal::ArithmeticalDSSComputerOnSurfels<TKSpace,TIterator,TInteger,adjacency>::p
 {
     ASSERT(myKSpace != nullptr);
 
-    typename KSpace::DirIterator q1 = myKSpace->sDirs(aSCell), q2 = q1;
-    ++q2;
-
+    typename KSpace::DirIterator q1 = myKSpace->sDirs(aSCell);
     // We pick 2 linels of the surfel
     SCell linel1 = myKSpace->sIncident(aSCell, *q1, true),
           linel2 = myKSpace->sIncident(aSCell, *q1, false);
 
-    // 4 points of the surfel
-    Point3 p1_1 = myKSpace->sCoords(myKSpace->sIncident(linel1, *q2, false)),
-           p1_2 = myKSpace->sCoords(myKSpace->sIncident(linel1, *q2, true)),
-           p2_1 = myKSpace->sCoords(myKSpace->sIncident(linel2, *q2, false)),
-           p2_2 = myKSpace->sCoords(myKSpace->sIncident(linel2, *q2, true));
+   // 4 points of the surfel
+    Point3 p1_1 = myKSpace->sCoords(myKSpace->sIncident(linel1, *myKSpace->sDirs(linel1), false)),
+           p1_2 = myKSpace->sCoords(myKSpace->sIncident(linel1, *myKSpace->sDirs(linel1), true)),
+           p2_1 = myKSpace->sCoords(myKSpace->sIncident(linel2, *myKSpace->sDirs(linel2), false)),
+           p2_2 = myKSpace->sCoords(myKSpace->sIncident(linel2, *myKSpace->sDirs(linel2), true));
 
     std::set<Point> points;
     points.insert(projectInPlane(p1_1));

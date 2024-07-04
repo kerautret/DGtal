@@ -49,7 +49,9 @@ using KSpace = Z3i::KSpace;
 using SH3    = Shortcuts<KSpace>;
 using Surfel = KSpace::SCell;
 
-using SegmentComputerOnSurfels = ArithmeticalDSSComputerOnSurfels<KSpace, std::vector<Surfel>::const_iterator, int, 4>;
+using CircIterator =  Circulator<std::vector<Surfel>::const_iterator>;
+
+using SegmentComputerOnSurfels = ArithmeticalDSSComputerOnSurfels<KSpace, CircIterator, int, 4>;
 using SegmentationSurfels   = SaturatedSegmentation<SegmentComputerOnSurfels>;
 
 using SegmentComputer = ArithmeticalDSSComputer<std::vector<Z2i::Point>::const_iterator, int, 4>;
@@ -143,10 +145,11 @@ TEST_CASE("Testing ArithmeticalDSSComputerOnSurfels")
     KSpace kspace;
     Slice slice;
     std::tie(kspace, slice) = getSlice();
-
+    
     // Do a segmentation using the surfel class
     SegmentComputerOnSurfels recognitionAlgorithmSurfels(kspace, slice.dim1, slice.dim2);
-    SegmentationSurfels segmentationSurfels(slice.contour.begin(), slice.contour.end(), recognitionAlgorithmSurfels);
+    auto cit = CircIterator(slice.contour.begin(), slice.contour.begin(), slice.contour.end());
+    SegmentationSurfels segmentationSurfels(cit, cit, recognitionAlgorithmSurfels);
 
     // Extract the projected points
     std::vector<Z2i::Point> points = extractPoints(recognitionAlgorithmSurfels, slice);
